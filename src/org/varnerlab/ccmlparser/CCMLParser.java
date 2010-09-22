@@ -16,7 +16,6 @@ public class CCMLParser {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		// Testing
 		// Method attributes -
         String strPropPath = args[0];
         
