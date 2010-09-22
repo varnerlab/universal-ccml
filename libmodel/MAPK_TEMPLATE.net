@@ -1,0 +1,103 @@
+// PKC activates Ras
+// [Wood, KW. Cell 68, 1041-1050 (1992)]
+1,PKC_Act+Ras_GDP,PKC_Act_Ras_GDP,-inf,inf;
+2,PKC_Act_Ras_GDP,PKC_Act+Ras_GTP,0,inf;
+// PKC activates Raf
+// [Kolch, W. Nature 364, 249-252 (1993)]
+1,PKC_Act+Raf,PKC_Act_Raf,-inf,inf;
+2,PKC_Act_Raf,PKC_Act+Raf_p,0,inf;
+
+// MAPK Cascade
+// We will assume Ras can initiate the ERK MAPK cascade at the membrane attached to an
+// RTK complex or as a free protein in the cytosol.
+// Ras activates Raf
+1,Ras_GTP+Raf,Ras_GTP_Raf,-inf,inf;
+2,Ras_GTP_Raf,Ras_GTP+Raf_p,0,inf;
+// Raf Dephosphorylation
+1,Raf_p+RafPase,Raf_p_RafPase,-inf,inf;
+2,Raf_p_RafPase,Raf+RafPase,0,inf;
+// Raf activates MEK by double phosphorylation
+1,MEK+Raf_p,MEK_Raf_p,-inf,inf;
+2,MEK_Raf_p,MEK_p+Raf_p,0,inf;
+3,MEK_p+Raf_p,MEK_p_Raf_p,-inf,inf;
+4,MEK_p_Raf_p,MEK_pp+Raf_p,0,inf;
+// MEK activates ERK by double phosphorylation
+1,ERK+MEK_pp,ERK_MEK_pp,-inf,inf;
+2,ERK_MEK_pp,ERK_p+MEK_pp,0,inf;
+3,ERK_p+MEK_pp,ERK_p_MEK_pp,-inf,inf;
+4,ERK_p_MEK_pp,ERK_pp+MEK_pp,0,inf;
+// MEK and ERK Dephosphorylation
+1,MEK_p+MEKPase,MEK_p_MEKPase,-inf,inf;
+2,MEK_p_MEKPase,MEK+MEKPase,0,inf;
+3,MEK_pp+MEKPase,MEK_pp_MEKPase,-inf,inf;
+4,MEK_pp_MEKPase,MEK_p+MEKPase,0,inf;
+5,ERK_p+ERKPase,ERK_p_ERKPase,-inf,inf;
+6,ERK_p_ERKPase,ERK+ERKPase,0,inf;
+7,ERK_pp+ERKPase,ERK_pp_ERKPase,-inf,inf;
+8,ERK_pp_ERKPase,ERK_p+ERKPase,0,inf;
+
+// MAPK Negative Feedback
+
+// ERK phosphorylates Sos on Her2 & EGFR, causing dissociation of Sos
+// [Langlois, WJ. JBC 270, 25320-25323 (1995)]
+// [Asthagiri, AR. Biotech Prog 17, 227-239 (2001)] 
+1,Her2_2_p_Grb2_Sos+ERK_pp,Her2_2_p_Grb2_Sos_ERK_pp,-inf,inf;
+2,Her2_2_p_Grb2_Sos_ERK_pp,Her2_2_p_Grb2_Sos_p+ERK_pp,0,inf;
+3,Her2_2_p_Grb2_Sos_p,Her2_2_p_Grb2+Sos_p,0,inf;
+4,Her2_2_p_Grb2_Sos_p,Her2_2_p+Grb2_Sos_p,0,inf;
+5,Her2_2_p_Shc_p_Grb2_Sos+ERK_pp,Her2_2_p_Shc_p_Grb2_Sos_ERK_pp,-inf,inf;
+6,Her2_2_p_Shc_p_Grb2_Sos_ERK_pp,Her2_2_p_Shc_p_Grb2_Sos_p+ERK_pp,0,inf;
+7,Her2_2_p_Shc_p_Grb2_Sos_p,Her2_2_p_Shc_p_Grb2+Sos_p,0,inf;
+8,Her2_2_p_Shc_p_Grb2_Sos_p,Her2_2_p_Shc_p+Grb2_Sos_p,0,inf;
+9,EGFR_EGF_2_p_Grb2_Sos+ERK_pp,EGFR_EGF_2_p_Grb2_Sos_ERK_pp,-inf,inf;
+10,EGFR_EGF_2_p_Grb2_Sos_ERK_pp,EGFR_EGF_2_p_Grb2_Sos_p+ERK_pp,0,inf;
+11,EGFR_EGF_2_p_Grb2_Sos_p,EGFR_EGF_2_p_Grb2+Sos_p,0,inf;
+12,EGFR_EGF_2_p_Grb2_Sos_p,EGFR_EGF_2_p+Grb2_Sos_p,0,inf;
+13,EGFR_EGF_2_p_Shc_p_Grb2_Sos+ERK_pp,EGFR_EGF_2_p_Shc_p_Grb2_Sos_ERK_pp,-inf,inf;
+14,EGFR_EGF_2_p_Shc_p_Grb2_Sos_ERK_pp,EGFR_EGF_2_p_Shc_p_Grb2_Sos_p+ERK_pp,0,inf;
+15,EGFR_EGF_2_p_Shc_p_Grb2_Sos_p,EGFR_EGF_2_p_Shc_p_Grb2+Sos_p,0,inf;
+16,EGFR_EGF_2_p_Shc_p_Grb2_Sos_p,EGFR_EGF_2_p_Shc_p+Grb2_Sos_p,0,inf;
+
+// Dephosphorylation of Sos by an unknown Pase
+1,Sos_p+SosPase,Sos_p_SosPase,-inf,inf;
+2,Sos_p_SosPase,Sos+SosPase,0,inf;
+3,Grb2_Sos_p+SosPase,Grb2_Sos_p_SosPase,-inf,inf;
+4,Grb2_Sos_p_SosPase,Grb2_Sos+SosPase,0,inf;
+5,Her2_2_p_Grb2_Sos_p+SosPase,Her2_2_p_Grb2_Sos_p_SosPase,-inf,inf;
+6,Her2_2_p_Grb2_Sos_p_SosPase,Her2_2_p_Grb2_Sos+SosPase,0,inf;
+7,Her2_2_p_Shc_p_Grb2_Sos_p+SosPase,Her2_2_p_Shc_p_Grb2_Sos_p_SosPase,-inf,inf;
+8,Her2_2_p_Shc_p_Grb2_Sos_p_SosPase,Her2_2_p_Shc_p_Grb2_Sos+SosPase,0,inf;
+9,EGFR_EGF_2_p_Grb2_Sos_p+SosPase,EGFR_EGF_2_p_Grb2_Sos_p_SosPase,-inf,inf;
+10,EGFR_EGF_2_p_Grb2_Sos_p_SosPase,EGFR_EGF_2_p_Grb2_Sos+SosPase,0,inf;
+11,EGFR_EGF_2_p_Shc_p_Grb2_Sos_p+SosPase,EGFR_EGF_2_p_Shc_p_Grb2_Sos_p_SosPase,-inf,inf;
+12,EGFR_EGF_2_p_Shc_p_Grb2_Sos_p_SosPase,EGFR_EGF_2_p_Shc_p_Grb2_Sos+SosPase,0,inf;
+
+// Activated ERK deactivates MEK by retrophosphorylation
+// [Brunet, A. FEBS Lett 346, 299-303 (1994)]
+1,ERK_pp+MEK,ERK_pp_MEK,-inf,inf;
+2,ERK_pp_MEK,ERK_pp+MEK_rp,0,inf;
+3,MEK_rp+MEKPase,MEK_rp_MEKPase,-inf,inf;
+4,MEK_rp_MEKPase,MEK+MEKPase,0,inf;
+
+// Activated ERK deactivates Raf by retrophosphorylation
+// [Wartmann, M. JBC 272, 3915-3923 (1997)]
+// [Asthagiri, AR. Biotech Prog 17, 227-239 (2001)]
+1,ERK_pp+Raf_p,ERK_pp_Raf_p,-inf,inf;
+2,ERK_pp_Raf_p,ERK_pp+Raf_p_rp,0,inf;
+3,Raf_p_rp+RafPase,Raf_p_rp_RafPase,-inf,inf;
+4,Raf_p_rp_RafPase,Raf_p+RafPase,0,inf;
+
+// MAPK Positive Feedback
+
+// cPLA2 is phosphorylated and activated by ERK at S505. 
+// cPLA2 requires Ca2+ but we are not modeling that yet.
+// [Lin, L. Cell 72, 269-278 (1993)]
+1,ERK_pp+cPLA2,ERK_pp_cPLA2,-inf,inf;
+2,ERK_pp_cPLA2,ERK_pp+cPLA2_p,0,inf;
+3,cPLA2_p+cPLA2Pase,cPLA2_p_cPLA2Pase,-inf,inf;
+4,cPLA2_p_cPLA2Pase,cPLA2+cPLA2Pase,0,inf;
+
+// cPLA2 activates PKC
+// It is actually the fatty acid produced by cPLA2 which is the activator
+1,cPLA2_p+PKC,cPLA2_p_PKC,-inf,inf;
+2,cPLA2_p_PKC,cPLA2_p+PKC_Act,0,inf;
