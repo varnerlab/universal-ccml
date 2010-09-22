@@ -1,0 +1,206 @@
+R_1,3.0*TNFR1+SODD,TNFR1_SODD,-inf,inf;
+R_2,TNFR1_SODD+3*TNFalpha,TNFR1_TNFalpha+SODD,-inf,inf;
+RXN_2,TNFR1_TNFalpha+TRADD,TNFR1_TNFalpha_TRADD,-inf,inf;
+RXN_3,TNFR1_TNFalpha_TRADD+FLIPL,TNFR1_TNFalpha_TRADD_FLIPL,-inf,inf;
+RXN_4,3.0*TRAILR1+3.0*TRAIL,TRAILR1_TRAIL,-inf,inf;
+RXN_5,TRAILR1_TRAIL+TRADD,TRAILR1_TRAIL_TRADD,-inf,inf;
+RXN_6,TRAILR1_TRAIL_TRADD+FLIPL,TRAILR1_TRAIL_TRADD_FLIPL,-inf,inf;
+
+// Fas receptor trimerization and signaling
+RXN_10,3.0*FasL+3.0*Fas,Fas_FasL,-inf,inf;
+R_Deg,Fas_FasL,[],0,inf;
+RXN_11,Fas_FasL+FADD,Fas_FasL_FADD,-inf,inf;
+RXN_12,Fas_FasL_FADD+FLIPL,Fas_FasL_FADD_FLIPL,-inf,inf;
+R_13_ani,Fas_FasL+Casper,Fas_FasL_Casper,-inf,inf;
+R_14_ani,Fas_FasL+I_FLICE,Fas_FasL_I_FLICE,-inf,inf;
+
+// Other possibilities could be with FLAME,CASH,MERIT
+// Caspase activation by DISCs (death inducing signaling complexes formed by death receptor activation
+// Treated caspase recruitment and activation as an irreversible reaction
+// These equations seem to indicate that only 2 caspase molecules get activated per DISC which might be an incorrect assumption
+// note-caspases are not present in mito, contrary to previous info in literature
+RXN_17b,TNFR1_TNFa_TRADD_FLIPL+2.0*ProCASP8,TNFR1_TNFa_TRADD_ProCASP8,-inf,inf;
+RXN_17r,TNFR1_TNFa_TRADD_ProCASP8,TNFR1_TNFa_TRADD_FLIPL+2*CASP8,0,inf;
+RXN_18b,TRAILR1_TNFa_TRADD_FLIPL+2.0*ProCASP8,TRAILR1_TNFa_TRADD_ProCASP8,-inf,inf;
+RXN_18r,TRAILR1_TNFa_TRADD_ProCASP8,TRAILR1_TNFa_TRADD_FLIPL+2.0*CASP8,0,inf;
+RXN_19b,TRAILR2_TNFa_TRADD_FLIPL+2.0*ProCASP8,TRAILR2_TNFa_TRADD_ProCASP8,-inf,inf;
+RXN_19r,TRAILR2_TNFa_TRADD_ProCASP8,TRAILR2_TNFa_TRADD_FLIPL+2.0*CASP8,0,inf;
+RXN_20b,Fas_FasL_FADD_FLIPL+2.0*ProCASP8,Fas_FasL_FADD_ProCASP8,-inf,inf;
+RXN_20r,Fas_FasL_FADD_ProCASP8,Fas_FasL_FADD_FLIPL+2.0*CASP8,0,inf;
+
+// Activation of executioner caspases 3,6,7 directly
+RXN_21b,CASP8+ProCASP3,CASP8_ProCASP3,-inf,inf;
+RXN_21r,CASP8_ProCASP3,CASP8+CASP3,0,inf;
+RXN_22b,CASP8+ProCASP6,CASP8_ProCASP6,-inf,inf;
+RXN_22r,CASP8_ProCASP6,CASP8+CASP6,0,inf;
+RXN_23b,CASP8+ProCASP7,CASP8_ProCASP7,-inf,inf;
+RXN_23r,CASP8_ProCASP7,CASP8+CASP7,0,inf;
+
+// Executioner caspases can also activate procaspase8, caspase 3,6,7 feedback to activate Procaspase 8
+RXN_24b,ProCASP8+CASP3,ProCASP8_CASP3,-inf,inf;
+RXN_24r,ProCASP8_CASP3,CASP8+CASP3,0,inf;
+RXN_25b,ProCASP8+CASP6,ProCASP8_CASP6,-inf,inf;
+RXN_25r,ProCASP8_CASP6,CASP8+CASP6,0,inf;
+RXN_26b,ProCASP8+CASP7,ProCASP8_CASP7,-inf,inf;
+RXN_26r,ProCASP8_CASP7,CASP8+CASP7,0,inf;
+
+// Caspase8 activates Bid, regulation of Bid by Casein kinase I & II (CKI, CKII) 
+// phosphorylation is included
+// Occurs in typeII cells with low CASP8 levels
+RXN_27b,Bid_c+CKI,Bid_CKI,-inf,inf;
+RXN_27r,Bid_CKI,P_Bid_c+CKI,0,inf;
+R_Deg,Bid_CKI,[],0,inf;
+RXN_28b,Bid_c+CKII,Bid_CKII,-inf,inf;
+RXN_29r,Bid_CKII,P_Bid_c+CKII,0,inf;
+R_Deg,Bid_CKII,[],0,inf;
+RXN_30b,Bid_c+CASP8,Bid_CASP8,-inf,inf;
+RXN_30r,Bid_CASP8,t_Bid_c+CASP8,0,inf;
+
+R_activation_t_Bid_c,t_Bid_c+PTP_open,t_Bid_c_PTP_open,0,inf;
+R_activation_and_multiplication_PTP_open,t_Bid_c_PTP_open,t_Bid_c+5*PTP_open,0,inf;
+R_gen,PTP_open,[],-inf,inf;
+R_ani_crma_inhibition_casp8_bdid_cleavage,CrmA+Bid_CASP8,CrmA_Bid_CASP8,-inf,inf;
+R_gen_g_CrmA,[],g_CrmA,0,inf;
+R_gen_mRNA_CrmA,g_CrmA+RNAP,g_CrmA_RNAP,-inf,inf; 
+R_gen_mRNA_CrmA_2,g_CrmA_RNAP,mRNA_CrmA+RNAP,0,inf;
+RXN_27rm2,mRNA_CrmA+Ribosome,Rm_CrmA,-inf,inf;
+RXN_27ar2,Rm_CrmA,Ar_CrmA,0,inf;
+RXN_27p2,Ar_CrmA,CrmA+Ribosome,0,inf;
+
+// Release of mitochondrial proteins into cytosol
+// Diablo alias: Smac
+RXN_53,PTP_open+Diablo_m,Diablo_PTP_open,0,inf;
+R_Diablogeneration,Diablo_PTP_open,Diablo_c+PTP_open,0,inf;  	
+
+// Omi alias: HtrA2
+RXN_54,PTP_open+Omi_m,Omi_PTP_open,0,inf;
+R_a,Omi_PTP_open,Omi_c+PTP_open,0,inf;
+RXN_55,PTP_open+AIF_m,AIF_PTP_open,0,inf;
+RXN_56,PTP_open+endoG_m,endoG_PTP_open,0,inf;
+R_a,endoG_PTP_open,endoG_c+PTP_open,0,inf;
+RXN_57,Diablo_c+IAP1,Diablo_IAP1,-inf,inf;
+RXN_58,Omi_c+IAP1,Omi_IAP1,-inf,inf;
+RXN_60,endoG_c,endoG_n,-inf,inf;
+
+// AIF_n and endoG_n are the direct markers for DNA damage
+// Capture role of IAPs; not sure if IAPs also inhibit initiator caspases; 
+// IAPs also interact with TRAFs
+RXN_63,IAP1+CASP3,IAP1_CASP3,-inf,inf;
+RXN_64,IAP1+CASP6,IAP1_CASP6,-inf,inf;
+RXN_65,IAP1+CASP7,IAP1_CASP7,-inf,inf;
+RXN_66,IAP2+CASP3,IAP2_CASP3,-inf,inf;
+R_a,AIF_PTP_open,AIF_c+PTP_open,0,inf;
+RXN_67,IAP2+CASP6,IAP2_CASP6,-inf,inf;
+RXN_68,IAP2+CASP7,IAP2_CASP7,-inf,inf;
+RXN_69,XIAP+CASP3,XIAP_CASP3,-inf,inf;
+RXN_70,XIAP+CASP6,XIAP_CASP6,-inf,inf;
+RXN_71,XIAP+CASP7,XIAP_CASP7,-inf,inf;
+
+// HtrA2 reaction with XIAP to inhibit by competetively reacting with XIAP
+R_ani,XIAP+Omi_c,XIAP_Omi_c,-inf,inf;
+
+// Formation of apoptosome and activation of caspase9; not sure if caspase9 
+// actually dissociates from the apoptosome once it is activated
+// here we also need to consider the fact that Apaf1 can be phosphorylated
+R_cytoc_m_release_into_cytosol,cytoc_m+PTP_open,cytoc_m_PTP_open,-inf,inf;
+R_cytoc_m_release_into_cytosol,cytoc_m_PTP_open,PTP_open+cytochromeC_c,-inf,inf;
+R_deg,cytochromeC_c,[],0,inf;
+
+R_ani,Apaf1,Apaf1_p,-inf,inf;
+R_ani,7*cytochromeC_c+7*Apaf1_p+7*ProCASP9,Apoptosome,-inf,inf;
+//this one shud have a faster rate constant
+
+RXN_72,7*cytochromeC_c+7*Apaf1+7*ProCASP9,Apoptosome,-inf,inf;
+
+RXN_73,Apoptosome,7*CASP9,0,inf;
+R_deg,Apoptosome,[],0,inf;
+R_Deg,CASP9,[],0,inf;
+
+// So we are asuming that the other species are being degraded 
+// Cross-activation of initiator and executioner caspases
+RXN_74b,ProCASP3+CASP9,ProCASP3_CASP9,-inf,inf;
+RXN_74r,ProCASP3_CASP9,CASP9+CASP3,0,inf;
+RXN_75b,ProCASP6+CASP9,ProCASP6_CASP9,-inf,inf;
+RXN_75r,ProCASP6_CASP9,CASP9+CASP6,0,inf;
+RXN_76b,ProCASP7+CASP9,ProCASP7_CASP9,-inf,inf;
+RXN_76r,ProCASP7_CASP9,CASP9+CASP7,0,inf;
+
+// this part is the direct self activation by the caspases
+RXN_77b,ProCASP9+CASP3,ProCASP9_CASP3,-inf,inf;
+RXN_77r,ProCASP9_CASP3,CASP9+CASP3,0,inf;
+RXN_78b,ProCASP9+CASP6,ProCASP9_CASP3,-inf,inf;
+RXN_78r,ProCASP9_CASP3,CASP9+CASP6,0,inf;
+RXN_79b,ProCASP9+CASP7,ProCASP9_CASP7,-inf,inf;
+RXN_79r,ProCASP9_CASP7,CASP9+CASP7,0,inf;
+
+// Bax and Bak increases the activity of PTP open and Bcl2 reduces its activity
+R_activation_Bak,Bak+PTP_open,Bak_PTP_open,0,inf;
+R_activation_and_multiplication_PTP_open,Bak_PTP_open,Bak+5*PTP_open,0,inf;
+//this reaction is written as if it is consuming the PTP_open
+R_deactivation_Bcl2,Bcl2+PTP_open,Bcl2_PTP_open,0,inf;
+R_deg,Bcl2_PTP_open,[],0,inf;
+
+//Now we need to add the part for the Bax/Bak
+//Some common terms here are BID=Bad=PUMA=NOXA=BIM we shall use Bad
+//Bak/Bax we use Bak
+//BCL2/BCL-XL we use BCL2
+//Model 1
+R_Bcl2_complexing_Bak,Bcl2+Bak,Bcl2_Bak,-inf,inf;
+R_t_Bid_c_acting_with_Bcl2_Bak,Bcl2_Bak+t_Bid_c,Bak+Bcl2_t_Bid_c,-inf,inf;
+RXN_205b,CASP3+GAS2,CASP3_GAS2,-inf,inf;
+RXN_205r,CASP3_GAS2,CASP3+t_GAS2,-inf,inf;
+R_deg,t_GAS2,[],0,inf;
+RXN_206b,CASP3+Fodrin,CASP3_Fodrin,-inf,inf;
+
+// cleavage of Fodrin results in plasma membrane blebbing, one of the main identifying characteristics of a cell undergoing apoptosis
+RXN_207r,CASP3_Fodrin,CASP3+t_Fodrin,-inf,inf;
+R_deg,t_Fodrin,[],0,inf;
+
+RXN_208b,CASP3+Gelsolin,CASP3_Gelsolin,-inf,inf;
+//can't participate in cytoskeletal maintenance
+RXN_208r,CASP3_Gelsolin,CASP3+t_Gelsolin,-inf,inf;
+R_Deg,t_Gelsolin,[],0,inf;
+
+// clipping of nuclear membrane proteins---leads to disintegration of nuclear envelope
+RXN_211b,CASP6+LaminA,CASP6_LaminA,-inf,inf;
+RXN_211r,CASP6_LaminA,CASP6+t_LaminA,-inf,inf;
+R_deg,t_LaminA,[],0,inf;
+RXN_212b,CASP3+LaminB1,CASP3_LaminB1,-inf,inf;
+
+// Casp3 vs other exec. casp--Slee_Adrain_2001
+RXN_212r,CASP3_LaminB1,CASP3+t_LaminB1,-inf,inf;
+R_deg,t_LaminB1,[],0,inf;
+RXN_213b,CASP6+LaminC,CASP6_LaminC,-inf,inf;
+RXN_213r,CASP6_LaminC,CASP6+t_LaminC,-inf,inf;
+RXN_214b,CASP3+Nup153,CASP3_Nup153,-inf,inf;
+
+//nuclear pore disrupted; Nup153 is an important component of the nuclear pore complex
+RXN_214r,CASP3_Nup153,CASP3+t_Nup153,-inf,inf;
+R_deg,t_Nup153,[],0,inf;
+
+// clipping proteins involved in DNA metab. and repair (Earnshaw_Martins_1999)
+// include PARP here the forward reaction is determining the fact that it is inhibiting (Slee_Adrian_1999)
+RXN_215b,CASP3+PARP,CASP3_PARP,-inf,inf;
+RXN_216r,CASP3_PARP,CASP3+PARP_act,-inf,inf;
+R_deg,PARP_act,[],0,inf;
+R_deg,t_LaminC,[],0,inf;
+
+RXN_217b,CASP7+PARP,CASP7_PARP,-inf,inf;
+RXN_217r,CASP7_PARP,CASP7+PARP_act,-inf,inf;
+RXN_218b,CASP9+PARP,CASP9_PARP,-inf,inf;
+RXN_218r,CASP9_PARP,CASP9+PARP_act,-inf,inf;
+RXN_219b,CASP3+TopoI,CASP3_TopoI,-inf,inf;
+
+// probably inactivates topoisomerase I
+RXN_219r,CASP3_TopoI,CASP3+t_TopoI,-inf,inf;
+RXN_220b,CASP3+PolE,CASP3_PolE,-inf,inf;
+
+// Pol_epsilon can no longer bind to PCNA or other subunits of the replication complex
+RXN_220r,CASP3_PolE,CASP3+t_PolE,-inf,inf;
+
+// DNA fragmentation
+// also see earlier reactions for AIF and endoG-->DNA degradation
+// here we have the formation of the CAD which is a measure of DNA fragmentation
+RXN_221b,CASP9+ICAD,CASP9_ICAD,-inf,inf;
+RXN_221r,CASP9_ICAD,CASP9+CAD,-inf,inf;
+R_deg,CAD,[],0,inf;
