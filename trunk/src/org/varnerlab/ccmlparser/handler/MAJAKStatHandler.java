@@ -11,6 +11,7 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
 
+import org.varnerlab.ccmlparser.CCMLMAObject;
 import org.varnerlab.ccmlparser.IReceptorNetworkHandler;
 import org.varnerlab.ccmlparser.ReactionType;
 import org.w3c.dom.Document;
@@ -18,32 +19,8 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
-public class MAJAKStatHandler implements IReceptorNetworkHandler {
-	// Class/instance attributes -
-	private Hashtable<String,Object> _propTable = new Hashtable<String,Object>();
-	private XPathFactory  _xpFactory = XPathFactory.newInstance();
-	private XPath _xpath = _xpFactory.newXPath();
-	private ArrayList<String> _arrListSBMLReactions = new ArrayList<String>();
-	private int _intReactionCounter = 0;
-	private ArrayList<ReactionType> _arrListReactionType = new ArrayList<ReactionType>();
-
-	// Set and get properties -
-	public void setProperty(String key,Object value)
-	{
-		_propTable.put(key, value);
-	}
+public class MAJAKStatHandler extends CCMLMAObject implements IReceptorNetworkHandler {
 	
-	public Object getProperty(String key)
-	{
-		return(_propTable.get(key));
-	}
-	
-	public void setReactionIndex(int index)
-	{
-		_intReactionCounter = index;
-	}
-	
-
 	private void initHandler(Document ccmlTree) throws Exception
 	{
 		// Ok, get the name of the receptor -
@@ -77,7 +54,7 @@ public class MAJAKStatHandler implements IReceptorNetworkHandler {
 		setProperty("MESSENGER_SYMBOL",strMessengerSymbol);
 		
 		// Ok, we need to process the list of regulators and store the info in properties -
-		String strXPath = "//Receptor_network_block/listOfReceptors/receptor_block[@block_class='JAK_STAT']/listOfRegulators/regulator/@key";
+		String strXPath = "//Receptor_signaling_network_block/listOfReceptors/receptor_block[@block_class='JAK_STAT']/listOfRegulators/regulator/@key";
 		NodeList nodeList = (NodeList)_xpath.evaluate(strXPath,ccmlTree,XPathConstants.NODESET);
 		int NUMBER_OF_REGULATORS = nodeList.getLength();
 		for (int index = 0;index<NUMBER_OF_REGULATORS;index++)
@@ -87,7 +64,7 @@ public class MAJAKStatHandler implements IReceptorNetworkHandler {
 			String strKeyName = tmpNode.getNodeValue();
 			
 			// Get the symbol -
-			String strSymbolXPath = "//Receptor_network_block/listOfReceptors/receptor_block[@block_class='JAK_STAT']/listOfRegulators/regulator[@key='"+strKeyName+"']/@symbol";
+			String strSymbolXPath = "//Receptor_signaling_network_block/listOfReceptors/receptor_block[@block_class='JAK_STAT']/listOfRegulators/regulator[@key='"+strKeyName+"']/@symbol";
 			String strSymbol = queryCCMLTree(ccmlTree,strSymbolXPath);
 			
 			// store in prop -
@@ -151,50 +128,6 @@ public class MAJAKStatHandler implements IReceptorNetworkHandler {
 		}
 	}
 	
-	private ArrayList<String> generateSpeciesList(ArrayList<String> arrListReactions,Document doc) throws Exception
-	{
-		// Method attributes -
-		ArrayList<String> arrSpecies = new ArrayList<String>();
-		StringBuffer local_buffer = new StringBuffer();
-		DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-    	dbFactory.setNamespaceAware(true);
-    	DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-		
-		// Ok, so we are going to turn the reaction list into an xml tree and then use xpath to extract all the species -
-		local_buffer.append("<?xml version=\"1.0\"?>\n");
-		local_buffer.append("<listOfReactions>\n");
-		int NUMBER_OF_REACTIONS = arrListReactions.size();
-		for (int index=0;index<NUMBER_OF_REACTIONS;index++)
-		{
-			String tmpReaction = arrListReactions.get(index);
-			local_buffer.append(tmpReaction);
-		}
-		local_buffer.append("</listOfReactions>\n");
-		String strTmp = local_buffer.toString();
-		
-		// Ok, so now we need to create a document -
-		Document reaction_dom_tree = dBuilder.parse(new InputSource(new StringReader(local_buffer.toString())));
-		
-		// Create the XPath -
-		String strXPath = "//speciesReference/@species";
-		NodeList nodeList = (NodeList)_xpath.evaluate(strXPath,reaction_dom_tree,XPathConstants.NODESET);
-		int NUMBER_OF_SPECIES = nodeList.getLength();
-		for (int species_index=0;species_index<NUMBER_OF_SPECIES;species_index++)
-		{
-			// Get the gene symbol -
-			Node tmpNode = nodeList.item(species_index);
-			String strSpecies = tmpNode.getNodeValue();
-			
-			// check to see if we already have the species in the list -
-			if (!arrSpecies.contains(strSpecies))
-			{
-				arrSpecies.add(strSpecies);
-			}
-		}
-		
-		// return the array -
-		return(arrSpecies);
-	}
 	
 	private void buildBackgroundMessengerRegulation(ArrayList<String> arrListReactions,Document doc) throws Exception
 	{
@@ -463,8 +396,16 @@ public class MAJAKStatHandler implements IReceptorNetworkHandler {
 		
 		
 		// ok - build the MRNA generation reaction (forward) -
-		local_buffer.append("\t\t<reaction id=\"R_");
-		local_buffer.append(_intReactionCounter);
+		switch (rxnType)
+		{
+			case FORWARD_RATE:
+				local_buffer.append("\t\t<reaction id=\"REACTION_FORWARD");
+				break;
+			case REVERSE_RATE:
+				local_buffer.append("\t\t<reaction id=\"REACTION_REVERSE");
+				break;
+		}
+		
 		local_buffer.append("\" name=\""+strCoeffReactant+"*");
 		local_buffer.append(strReactant);
 		local_buffer.append(" = "+strCoeffProduct+"*");
@@ -501,135 +442,6 @@ public class MAJAKStatHandler implements IReceptorNetworkHandler {
 			// Ok, if we keep this reaction then I need to store its type -
 			_arrListReactionType.add(rxnType);
 			
-			// update the counter - 
-			_intReactionCounter++;
 		}	
-	}
-	
-	private void encodeMassActionSBMLReaction(ArrayList<String> buffer,Document doc,ArrayList<String> arrReactants,ArrayList<String> arrProducts,ReactionType rxnType) throws Exception
-	{
-		// Method attributes -
-		StringBuffer local_buffer = new StringBuffer();
-		
-		
-		// ok - build the MRNA generation reaction (forward) -
-		local_buffer.append("\t\t<reaction id=\"REACTION");
-		
-		switch (rxnType)
-		{
-			case FORWARD_RATE:
-				local_buffer.append("_FORWARD");
-				break;
-			case REVERSE_RATE:
-				local_buffer.append("_REVERSE");
-				break;
-			case CATALYTIC_RATE:
-				local_buffer.append("_CATALYTIC");
-				break;
-			case DEGRADATION:
-				local_buffer.append("_DEGRADATION");
-				break;
-			case GENERATION:
-				local_buffer.append("_GENERATION");
-				break;
-		}
-		
-		//local_buffer.append(_intReactionCounter);
-		local_buffer.append("\" name=\"");
-		
-		int NUMBER_OF_REACTANTS = arrReactants.size();
-		for (int reactant_index=0;reactant_index<NUMBER_OF_REACTANTS;reactant_index++)
-		{
-			String strTmpSymbol = arrReactants.get(reactant_index);
-			
-			// Add the symbol to the buffer -
-			local_buffer.append(strTmpSymbol);
-			
-			if (reactant_index!=NUMBER_OF_REACTANTS-1)
-			{
-				local_buffer.append(" + ");
-			}
-		}
-		
-		local_buffer.append(" = ");
-		
-		// Get the list of products -
-		int NUMBER_OF_PRODUCTS = arrProducts.size();
-		for (int product_index=0;product_index<NUMBER_OF_PRODUCTS;product_index++)
-		{
-			String strTmpSymbolRaw = arrProducts.get(product_index);
-			local_buffer.append(strTmpSymbolRaw);
-			
-			if (product_index!=NUMBER_OF_PRODUCTS-1)
-			{
-				local_buffer.append(" + ");
-			}
-		}
-		
-		local_buffer.append("\" reversible=\"false\">\n");
-		local_buffer.append("\t\t\t<listOfReactants>\n");
-		
-		for (int reactant_index=0;reactant_index<NUMBER_OF_REACTANTS;reactant_index++)
-		{
-			String strTmpSymbol = arrReactants.get(reactant_index);
-			local_buffer.append("\t\t\t\t<speciesReference species=\"");
-			local_buffer.append(strTmpSymbol);
-			local_buffer.append("\" stoichiometry=\"1\"/>\n");	
-		}
-		
-		local_buffer.append("\t\t\t</listOfReactants>\n");
-		local_buffer.append("\t\t\t<listOfProducts>\n");
-		
-		for (int product_index=0;product_index<NUMBER_OF_PRODUCTS;product_index++)
-		{
-			String strTmpSymbolRaw = arrProducts.get(product_index);			
-			local_buffer.append("\t\t\t\t<speciesReference species=\"");
-			local_buffer.append(strTmpSymbolRaw);
-			local_buffer.append("\" stoichiometry=\"1\"/>\n");
-			
-		}
-		
-		local_buffer.append("\t\t\t</listOfProducts>\n");
-		local_buffer.append("\t\t</reaction>\n");
-		
-		// Reaction string -
-		String strTmpString = local_buffer.toString();
-		
-		// Check to see if this string is in the main buffer already -
-		if (!_arrListSBMLReactions.contains(strTmpString))
-		{
-			// Ok, add the reaction string to the buffer -
-			_arrListSBMLReactions.add(strTmpString);
-			
-			// Add the local buffer to the main buffer -
-			buffer.add(local_buffer.toString());
-			
-			// Ok, if we keep this reaction then I need to store its type -
-			_arrListReactionType.add(rxnType);
-			
-			// update the counter - 
-			_intReactionCounter++;
-		}	
-	}
-	
-	
-	
-	// Get a string -
-	private String queryCCMLTree(Document ccmlTree,String strXPath)
-	{
-		// Method attributes -
-		String strProp = "";
-		
-		try {
-			Node propNode = (Node) _xpath.evaluate(strXPath, ccmlTree, XPathConstants.NODE);
-			strProp = propNode.getNodeValue();
-		}
-		catch (Exception error)
-		{
-			error.printStackTrace();
-			System.out.println("ERROR: Property lookup failed on CCMLTree. The following XPath "+strXPath+" resuled in an error - "+error.toString());
-		}
-		
-		return(strProp);
 	}
 }

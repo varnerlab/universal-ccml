@@ -257,44 +257,55 @@ public class MARegulatedGeneExpressionHandler extends CCMLMAObject implements IR
 			}
 			else
 			{
-				// Ok, crazy bitches ... I need to bind the co-repressor first and then make sure there is a transport reaction -
-				generateReversiblebBindingReactions(arrRxnList,doc,strGenePrefixSymbol+"_"+strRawGeneSymbol,strCorepressor,strCompartment);
+				// Ok, the strCorepressor may be a common delimited list -
+				String[] strFragmentArr = strCorepressor.split(",");
 				
-				// Transport -
-				// Ok, I need to get the co-activator into the nucleus -
-				// Binding of the TF to the nuclear transporter (in) -
-				arrReactants.add(strCorepressor+"_"+strTranslationCompartment);
-				arrReactants.add(strImport+"_"+strCompartment);
-				arrProducts.add(strCorepressor+"_"+strImport+"_"+strCompartment);
-				encodeMassActionSBMLReaction(arrRxnList,doc,arrReactants,arrProducts,ReactionType.FORWARD_RATE);
-				encodeMassActionSBMLReaction(arrRxnList,doc,arrProducts,arrReactants,ReactionType.REVERSE_RATE);
-				arrReactants.clear();
-				arrProducts.clear();
+				int NUMBER_OF_FRAGMENTS = strFragmentArr.length;
+				for (int fragment_index=0;fragment_index<NUMBER_OF_FRAGMENTS;fragment_index++)
+				{
 				
-				// Finish the reaction - transport of TF into the nucleus 
-				arrReactants.add(strCorepressor+"_"+strImport+"_"+strCompartment);
-				arrProducts.add(strImport+"_"+strCompartment);
-				arrProducts.add(strCorepressor+"_"+strCompartment);
-				encodeMassActionSBMLReaction(arrRxnList,doc,arrReactants,arrProducts,ReactionType.CATALYTIC_RATE);
-				arrReactants.clear();
-				arrProducts.clear();
-				
-				// Binding of the TF to the nuclear transporter (out) -
-				arrReactants.add(strCorepressor+"_"+strCompartment);
-				arrReactants.add(strExport+"_"+strCompartment);
-				arrProducts.add(strCorepressor+"_"+strExport+"_"+strCompartment);
-				encodeMassActionSBMLReaction(arrRxnList,doc,arrReactants,arrProducts,ReactionType.FORWARD_RATE);
-				encodeMassActionSBMLReaction(arrRxnList,doc,arrProducts,arrReactants,ReactionType.REVERSE_RATE);
-				arrReactants.clear();
-				arrProducts.clear();
-				
-				// Finish the reaction - transport TF *out* of the nucleus
-				arrReactants.add(strCorepressor+"_"+strExport+"_"+strCompartment);
-				arrProducts.add(strExport+"_"+strCompartment);
-				arrProducts.add(strCorepressor+"_"+strTranslationCompartment);
-				encodeMassActionSBMLReaction(arrRxnList,doc,arrReactants,arrProducts,ReactionType.CATALYTIC_RATE);
-				arrReactants.clear();
-				arrProducts.clear();
+					// Get the repressor -
+					String strFragment = strFragmentArr[fragment_index];
+					
+					// Ok, crazy bitches ... I need to bind the co-repressor first and then make sure there is a transport reaction -
+					generateReversiblebBindingReactions(arrRxnList,doc,strGenePrefixSymbol+"_"+strRawGeneSymbol,strFragment,strCompartment);
+					
+					// Transport -
+					// Ok, I need to get the co-activator into the nucleus -
+					// Binding of the TF to the nuclear transporter (in) -
+					arrReactants.add(strFragment+"_"+strTranslationCompartment);
+					arrReactants.add(strImport+"_"+strCompartment);
+					arrProducts.add(strFragment+"_"+strImport+"_"+strCompartment);
+					encodeMassActionSBMLReaction(arrRxnList,doc,arrReactants,arrProducts,ReactionType.FORWARD_RATE);
+					encodeMassActionSBMLReaction(arrRxnList,doc,arrProducts,arrReactants,ReactionType.REVERSE_RATE);
+					arrReactants.clear();
+					arrProducts.clear();
+					
+					// Finish the reaction - transport of TF into the nucleus 
+					arrReactants.add(strFragment+"_"+strImport+"_"+strCompartment);
+					arrProducts.add(strImport+"_"+strCompartment);
+					arrProducts.add(strFragment+"_"+strCompartment);
+					encodeMassActionSBMLReaction(arrRxnList,doc,arrReactants,arrProducts,ReactionType.CATALYTIC_RATE);
+					arrReactants.clear();
+					arrProducts.clear();
+					
+					// Binding of the TF to the nuclear transporter (out) -
+					arrReactants.add(strFragment+"_"+strCompartment);
+					arrReactants.add(strExport+"_"+strCompartment);
+					arrProducts.add(strFragment+"_"+strExport+"_"+strCompartment);
+					encodeMassActionSBMLReaction(arrRxnList,doc,arrReactants,arrProducts,ReactionType.FORWARD_RATE);
+					encodeMassActionSBMLReaction(arrRxnList,doc,arrProducts,arrReactants,ReactionType.REVERSE_RATE);
+					arrReactants.clear();
+					arrProducts.clear();
+					
+					// Finish the reaction - transport TF *out* of the nucleus
+					arrReactants.add(strFragment+"_"+strExport+"_"+strCompartment);
+					arrProducts.add(strExport+"_"+strCompartment);
+					arrProducts.add(strFragment+"_"+strTranslationCompartment);
+					encodeMassActionSBMLReaction(arrRxnList,doc,arrReactants,arrProducts,ReactionType.CATALYTIC_RATE);
+					arrReactants.clear();
+					arrProducts.clear();
+				}
 			}
 			
 			// Get where this complex assembles -
@@ -427,63 +438,74 @@ public class MARegulatedGeneExpressionHandler extends CCMLMAObject implements IR
 			}
 			else
 			{
-				// If I get here then I have a co-activator that must bind first -
-				// Binding of co-activator to the gene -
-				generateReversiblebBindingReactions(arrRxnList,doc,strGenePrefixSymbol+"_"+strRawGeneSymbol,strCoactivator,strCompartment);
-			
-				// Binding of the TF to the gene -
-				generateReversiblebBindingReactions(arrRxnList,doc,strGenePrefixSymbol+"_"+strRawGeneSymbol+"_"+strCoactivator,strComplexSymbol,strCompartment);
 				
-				// Binding of RNAP with the gene_TF complex -
-				String strTFComplex = strGenePrefixSymbol+"_"+strRawGeneSymbol+"_"+strCoactivator+"_"+strComplexSymbol;
-				generateReversiblebBindingReactions(arrRxnList,doc,strTFComplex,strRNAP,strCompartment);
+				// Ok, the strCorepressor may be a common delimited list -
+				String[] strFragmentArr = strCoactivator.split(",");
 				
-				// Generation of mRNA with coactivator -
-				arrReactants.add(strGenePrefixSymbol+"_"+strRawGeneSymbol+"_"+strCoactivator+"_"+strComplexSymbol+"_"+strRNAP+"_"+strCompartment);
-				arrProducts.add(strGenePrefixSymbol+"_"+strRawGeneSymbol+"_"+strCompartment);
-				arrProducts.add(strCoactivator+"_"+strCompartment);
-				arrProducts.add(strComplexSymbol+"_"+strCompartment);
-				arrProducts.add(strRNAP+"_"+strCompartment);
-				arrProducts.add(strMRNAPrefixSymbol+"_"+strRawGeneSymbol+"_"+strCompartment);
-				encodeMassActionSBMLReaction(arrRxnList,doc,arrReactants,arrProducts,ReactionType.CATALYTIC_RATE);
-				arrReactants.clear();
-				arrProducts.clear();
+				int NUMBER_OF_FRAGMENTS = strFragmentArr.length;
+				for (int fragment_index=0;fragment_index<NUMBER_OF_FRAGMENTS;fragment_index++)
+				{
 				
-				// Ok, I need to get the co-activator into the nucleus -
-				// Binding of the TF to the nuclear transporter (in) -
-				arrReactants.add(strCoactivator+"_"+strTranslationCompartment);
-				arrReactants.add(strImport+"_"+strCompartment);
-				arrProducts.add(strCoactivator+"_"+strImport+"_"+strCompartment);
-				encodeMassActionSBMLReaction(arrRxnList,doc,arrReactants,arrProducts,ReactionType.FORWARD_RATE);
-				encodeMassActionSBMLReaction(arrRxnList,doc,arrProducts,arrReactants,ReactionType.REVERSE_RATE);
-				arrReactants.clear();
-				arrProducts.clear();
+					// Get the repressor -
+					String strFragment = strFragmentArr[fragment_index];
 				
-				// Finish the reaction - transport of TF into the nucleus 
-				arrReactants.add(strCoactivator+"_"+strImport+"_"+strCompartment);
-				arrProducts.add(strImport+"_"+strCompartment);
-				arrProducts.add(strCoactivator+"_"+strCompartment);
-				encodeMassActionSBMLReaction(arrRxnList,doc,arrReactants,arrProducts,ReactionType.CATALYTIC_RATE);
-				arrReactants.clear();
-				arrProducts.clear();
+					// If I get here then I have a co-activator that must bind first -
+					// Binding of co-activator to the gene -
+					generateReversiblebBindingReactions(arrRxnList,doc,strGenePrefixSymbol+"_"+strRawGeneSymbol,strFragment,strCompartment);
 				
-				// Binding of the TF to the nuclear transporter (out) -
-				arrReactants.add(strCoactivator+"_"+strCompartment);
-				arrReactants.add(strExport+"_"+strCompartment);
-				arrProducts.add(strCoactivator+"_"+strExport+"_"+strCompartment);
-				encodeMassActionSBMLReaction(arrRxnList,doc,arrReactants,arrProducts,ReactionType.FORWARD_RATE);
-				encodeMassActionSBMLReaction(arrRxnList,doc,arrProducts,arrReactants,ReactionType.REVERSE_RATE);
-				arrReactants.clear();
-				arrProducts.clear();
-				
-				// Finish the reaction - transport TF *out* of the nucleus
-				arrReactants.add(strCoactivator+"_"+strExport+"_"+strCompartment);
-				arrProducts.add(strExport+"_"+strCompartment);
-				arrProducts.add(strCoactivator+"_"+strTranslationCompartment);
-				encodeMassActionSBMLReaction(arrRxnList,doc,arrReactants,arrProducts,ReactionType.CATALYTIC_RATE);
-				arrReactants.clear();
-				arrProducts.clear();
-				
+					// Binding of the TF to the gene -
+					generateReversiblebBindingReactions(arrRxnList,doc,strGenePrefixSymbol+"_"+strRawGeneSymbol+"_"+strFragment,strComplexSymbol,strCompartment);
+					
+					// Binding of RNAP with the gene_TF complex -
+					String strTFComplex = strGenePrefixSymbol+"_"+strRawGeneSymbol+"_"+strFragment+"_"+strComplexSymbol;
+					generateReversiblebBindingReactions(arrRxnList,doc,strTFComplex,strRNAP,strCompartment);
+					
+					// Generation of mRNA with coactivator -
+					arrReactants.add(strGenePrefixSymbol+"_"+strRawGeneSymbol+"_"+strFragment+"_"+strComplexSymbol+"_"+strRNAP+"_"+strCompartment);
+					arrProducts.add(strGenePrefixSymbol+"_"+strRawGeneSymbol+"_"+strCompartment);
+					arrProducts.add(strFragment+"_"+strCompartment);
+					arrProducts.add(strComplexSymbol+"_"+strCompartment);
+					arrProducts.add(strRNAP+"_"+strCompartment);
+					arrProducts.add(strMRNAPrefixSymbol+"_"+strRawGeneSymbol+"_"+strCompartment);
+					encodeMassActionSBMLReaction(arrRxnList,doc,arrReactants,arrProducts,ReactionType.CATALYTIC_RATE);
+					arrReactants.clear();
+					arrProducts.clear();
+					
+					// Ok, I need to get the co-activator into the nucleus -
+					// Binding of the TF to the nuclear transporter (in) -
+					arrReactants.add(strFragment+"_"+strTranslationCompartment);
+					arrReactants.add(strImport+"_"+strCompartment);
+					arrProducts.add(strFragment+"_"+strImport+"_"+strCompartment);
+					encodeMassActionSBMLReaction(arrRxnList,doc,arrReactants,arrProducts,ReactionType.FORWARD_RATE);
+					encodeMassActionSBMLReaction(arrRxnList,doc,arrProducts,arrReactants,ReactionType.REVERSE_RATE);
+					arrReactants.clear();
+					arrProducts.clear();
+					
+					// Finish the reaction - transport of TF into the nucleus 
+					arrReactants.add(strFragment+"_"+strImport+"_"+strCompartment);
+					arrProducts.add(strImport+"_"+strCompartment);
+					arrProducts.add(strFragment+"_"+strCompartment);
+					encodeMassActionSBMLReaction(arrRxnList,doc,arrReactants,arrProducts,ReactionType.CATALYTIC_RATE);
+					arrReactants.clear();
+					arrProducts.clear();
+					
+					// Binding of the TF to the nuclear transporter (out) -
+					arrReactants.add(strFragment+"_"+strCompartment);
+					arrReactants.add(strExport+"_"+strCompartment);
+					arrProducts.add(strFragment+"_"+strExport+"_"+strCompartment);
+					encodeMassActionSBMLReaction(arrRxnList,doc,arrReactants,arrProducts,ReactionType.FORWARD_RATE);
+					encodeMassActionSBMLReaction(arrRxnList,doc,arrProducts,arrReactants,ReactionType.REVERSE_RATE);
+					arrReactants.clear();
+					arrProducts.clear();
+					
+					// Finish the reaction - transport TF *out* of the nucleus
+					arrReactants.add(strFragment+"_"+strExport+"_"+strCompartment);
+					arrProducts.add(strExport+"_"+strCompartment);
+					arrProducts.add(strFragment+"_"+strTranslationCompartment);
+					encodeMassActionSBMLReaction(arrRxnList,doc,arrReactants,arrProducts,ReactionType.CATALYTIC_RATE);
+					arrReactants.clear();
+					arrProducts.clear();
+				}
 			}
 			
 			int NUMBER_OF_COMPONENTS = listOfActivatorComponents.size();

@@ -51,7 +51,7 @@ public class MAMAPKHandler extends CCMLMAObject implements IReactionHandler {
 		buildERKFeedback(arrRxnList,ccmlTree);
 		
 		// Process the interface block -
-		buildInterfaceReactions(arrRxnList,ccmlTree);
+		buildInterfaceReactions("MAPK_NETWORK",arrRxnList,ccmlTree);
 		
 		// Ok, now that we have done all the reactions, we need to determine the species list -
 		arrSpecies = generateSpeciesList(arrRxnList,ccmlTree);
