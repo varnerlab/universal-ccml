@@ -15,8 +15,6 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 public class MABasalGeneExpressionHandler extends CCMLMAObject implements IReactionHandler {
-	// Class/instance attributes -
-	private Hashtable<String,Object> _propTable = new Hashtable<String,Object>();
 	
 	
 	private void init(Document ccmlTree) throws Exception
@@ -131,9 +129,9 @@ public class MABasalGeneExpressionHandler extends CCMLMAObject implements IReact
 			
 			// Generate the protein -
 			arrReactants.add(strMRNASymbol+"_"+strRawGeneSymbol+"_"+strActiveSymbol+"_"+strTranslationRibosome+"_"+strTranslationCompartment);
-			arrProducts.add(strMRNASymbol+"_"+strRawGeneSymbol+"_"+strTranslationCompartment);
-			arrProducts.add(strRawGeneSymbol+"_"+strTranslationCompartment);
 			arrProducts.add(strTranslationRibosome+"_"+strTranslationCompartment);
+			arrProducts.add(strRawGeneSymbol+"_"+strTranslationCompartment);
+			arrProducts.add(strMRNASymbol+"_"+strRawGeneSymbol+"_"+strTranslationCompartment);
 			encodeMassActionSBMLReaction(arrRxnList,ccmlTree,arrReactants,arrProducts,ReactionType.CATALYTIC_RATE);
 			arrReactants.clear();
 			arrProducts.clear();
@@ -160,18 +158,4 @@ public class MABasalGeneExpressionHandler extends CCMLMAObject implements IReact
 		setProperty("REACTION_TYPE_LIST",_arrListReactionType);
 		setProperty("RECEPTOR_SPECIES_LIST",arrSpecies);	
 	}
-
-	public Object getProperty(String key) {
-		return(_propTable.get(key));
-		
-	}
-
-	public void setProperty(String key, Object value) {
-		_propTable.put(key, value);
-	}
-
-	
-	
-	
-	
 }

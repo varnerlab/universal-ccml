@@ -46,6 +46,7 @@ public class MANFKBNetworkHandler extends CCMLMAObject implements IReactionHandl
 		// Ok, make sure these guys are bound -
 		arrReactants.add(strIKBSymbol+"_"+strCompartment);
 		arrReactants.add(strNFKBSymbol+"_"+strCompartment);
+		arrProducts.add(strIKBSymbol+"_"+strNFKBSymbol+"_"+strCompartment);
 		encodeMassActionSBMLReaction(arrRxnList,ccmlTree,arrReactants,arrProducts,ReactionType.FORWARD_RATE);
 		arrReactants.clear();
 		arrProducts.clear();

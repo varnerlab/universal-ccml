@@ -36,7 +36,6 @@ public class MABMPHandler extends CCMLMAObject implements IReceptorNetworkHandle
 		// Ok, add the types of reactions to the properties -
 		setProperty("REACTION_TYPE_LIST",_arrListReactionType);
 		setProperty("RECEPTOR_SPECIES_LIST",arrSpecies);
-		
 	}
 	
 	
@@ -57,7 +56,7 @@ public class MABMPHandler extends CCMLMAObject implements IReceptorNetworkHandle
 		setProperty("RECEPTOR_COMPARTMENT",strReceptorCompartment);
 		
 		// Ok, we need to process the list of regulators and store the info in properties -
-		String strXPath = "//Receptor_network_block/listOfReceptors/receptor_block[@block_class='BMP_SMAD']/listOfComponents/component/@key";
+		String strXPath = "//Receptor_signaling_network_block/listOfReceptors/receptor_block[@block_class='BMP_SMAD']/listOfComponents/component/@key";
 		NodeList nodeList = (NodeList)_xpath.evaluate(strXPath,ccmlTree,XPathConstants.NODESET);
 		int NUMBER_OF_REGULATORS = nodeList.getLength();
 		for (int index = 0;index<NUMBER_OF_REGULATORS;index++)
@@ -67,7 +66,7 @@ public class MABMPHandler extends CCMLMAObject implements IReceptorNetworkHandle
 			String strKeyName = tmpNode.getNodeValue();
 			
 			// Get the symbol -
-			String strSymbolXPath = "//Receptor_network_block/listOfReceptors/receptor_block[@block_class='BMP_SMAD']/listOfComponents/component[@key='"+strKeyName+"']/@symbol";
+			String strSymbolXPath = "//Receptor_signaling_network_block/listOfReceptors/receptor_block[@block_class='BMP_SMAD']/listOfComponents/component[@key='"+strKeyName+"']/@symbol";
 			String strSymbol = queryCCMLTree(ccmlTree,strSymbolXPath);
 			
 			// store in prop -
