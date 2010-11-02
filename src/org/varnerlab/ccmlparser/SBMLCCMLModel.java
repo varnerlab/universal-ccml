@@ -18,12 +18,9 @@ import org.xml.sax.InputSource;
 
 public class SBMLCCMLModel extends CCMLMAObject {
 	// Class/instance attributes -
-	private ArrayList<String> _arrListSpecies = new ArrayList<String>();
 	private ArrayList<String> _arrListSBMLSpecies = new ArrayList<String>();
-	private ArrayList<String> _arrListSBMLReactions = new ArrayList<String>();
 	private int _intReactionCounter = 0;
-	private ArrayList<String> _arrLBasalGenes = new ArrayList<String>();
-	private ArrayList<ReactionType> _arrListReactionType = new ArrayList<ReactionType>();
+	//private ArrayList<ReactionType> _arrListReactionType = new ArrayList<ReactionType>();
 	
 	
 	public void populateHeader(StringBuffer buffer,Document doc) throws Exception
@@ -44,6 +41,55 @@ public class SBMLCCMLModel extends CCMLMAObject {
 	{
 		buffer.append("\t</model>\n");
 		buffer.append("</sbml>");
+	}
+	
+	
+	public void populateParameterBufferFromReactions(StringBuffer buffer,Document ccmlTree,Document doc) throws Exception
+	{
+		// Method attributes -
+		double dblValue = 0.0;
+		
+		// Get a list of types -
+		ArrayList<String> arrListTypes = generateReactionTypeList(_arrListSBMLReactions,ccmlTree);
+		
+		// Ok, grab the list of reaction types and then generate random parameters on the proper scale
+		int NUMBER_OF_REACTIONS = arrListTypes.size();
+		for (int parameter_index=0;parameter_index<NUMBER_OF_REACTIONS;parameter_index++)
+		{
+			// Get the reaction type -
+			String strRxnTmp = arrListTypes.get(parameter_index);
+			
+			if (strRxnTmp.equalsIgnoreCase("REACTION_FORWARD"))
+			{
+				dblValue = 1*Math.random();
+			}
+			else if (strRxnTmp.equalsIgnoreCase("REACTION_REVERSE"))
+			{
+				dblValue = 0.1*Math.random();
+			}
+			else if (strRxnTmp.equalsIgnoreCase("REACTION_CATALYTIC"))
+			{
+				dblValue = 1*Math.random();
+			}
+			else if (strRxnTmp.equalsIgnoreCase("REACTION_DEGRADATION"))
+			{
+				dblValue = 0.5*Math.random();
+			}
+			else if (strRxnTmp.equalsIgnoreCase("REACTION_GENERATION"))
+			{
+				dblValue = 1*Math.random();
+			}
+			
+			// Construct the parameter line -
+			buffer.append("\t\t\t<parameter id=\"PARAMETER_R_");
+			buffer.append(parameter_index);
+			buffer.append("\" name=\"k_");
+			buffer.append(parameter_index);
+			buffer.append("\" value=\"");
+			buffer.append(dblValue);
+			buffer.append("\"/>\n");
+		}
+		
 	}
 	
 	
@@ -88,16 +134,25 @@ public class SBMLCCMLModel extends CCMLMAObject {
 		}
 	}
 	
-	public void populateReactionList(StringBuffer buffer,Document ccmlTree,Document doc) throws Exception
+	public void populateReactionList(StringBuffer final_buffer,Document ccmlTree,Document doc) throws Exception
 	{
 		// Method attributes -
+		StringBuffer buffer = new StringBuffer();
 		
+		processMembraneTransportBlock(buffer,ccmlTree,doc);
 		processBasalExpressionReactionBlock(buffer, ccmlTree,doc);
 		processRegulatedExpressionReactionBlock(buffer, ccmlTree,doc);
 		processInfrastructureSynthesisReactionsBlock(buffer, ccmlTree);
 		processReceptorNetworkBlock(buffer, ccmlTree, doc);
 		processSignalingNetworkBlock(buffer, ccmlTree,doc);
-		processMembraneTransportBlock(buffer,ccmlTree,doc);
+		
+		// Ok, so we need to add these to the buffer -
+		int NUMBER_OF_REACTIONS = _arrListSBMLReactions.size();
+		for (int index=0;index<NUMBER_OF_REACTIONS;index++)
+		{
+			String tmpReaction = _arrListSBMLReactions.get(index);
+			final_buffer.append(tmpReaction);
+		}
 	}
 	
 	
@@ -105,6 +160,7 @@ public class SBMLCCMLModel extends CCMLMAObject {
 	{
 		// Method attributes -
 		ArrayList<String> arrLBlockClassList = new ArrayList<String>();
+		ArrayList<String> rxnList = _arrListSBMLReactions;
 		
 		// Ok, so I need to get the list of block classes -
 		String strBlockClassXPath = "//Membrane_transport_block/@block_class";
@@ -119,11 +175,13 @@ public class SBMLCCMLModel extends CCMLMAObject {
 		IReactionHandler handler = (IReactionHandler)Class.forName(strClassName).newInstance();
 		
 		// Ok, for now hard-code the handler (for testing)
-		ArrayList<String> rxnList = new ArrayList<String>();
+		//ArrayList<String> rxnList = new ArrayList<String>();
+		//ArrayList<String> rxnList = new ArrayList<String>();
 		
 		// Build the reactions -
 		handler.constructNetworkReactions(rxnList,ccmlTree);
 		
+		/*
 		// Ok, so we need to add these to the buffer -
 		int NUMBER_OF_REACTIONS = rxnList.size();
 		for (int index=0;index<NUMBER_OF_REACTIONS;index++)
@@ -131,6 +189,7 @@ public class SBMLCCMLModel extends CCMLMAObject {
 			String tmpReaction = rxnList.get(index);
 			buffer.append(tmpReaction);
 		}
+		*/
 		
 		// Grab the list of reaction types and add to the main list -
 		ArrayList<ReactionType> localTypeList = (ArrayList<ReactionType>)handler.getProperty("REACTION_TYPE_LIST");
@@ -157,6 +216,7 @@ public class SBMLCCMLModel extends CCMLMAObject {
 	{
 		// Method attributes -
 		ArrayList<String> arrLBlockClassList = new ArrayList<String>();
+		ArrayList<String> rxnList = _arrListSBMLReactions;
 		
 		// Ok, so I need to get the list of block classes -
 		String strBlockClassXPath = "//signaling_block/@block_class";
@@ -194,18 +254,19 @@ public class SBMLCCMLModel extends CCMLMAObject {
 			IReactionHandler handler = (IReactionHandler)Class.forName(strClassName).newInstance();
 			
 			// Ok, for now hard-code the handler (for testing)
-			ArrayList<String> rxnList = new ArrayList<String>();
+			//ArrayList<String> rxnList = new ArrayList<String>();
 			
 			// Build the reactions -
 			handler.constructNetworkReactions(rxnList,ccmlTree);
 			
+			/*
 			// Ok, so we need to add these to the buffer -
 			int NUMBER_OF_REACTIONS = rxnList.size();
 			for (int index=0;index<NUMBER_OF_REACTIONS;index++)
 			{
 				String tmpReaction = rxnList.get(index);
 				buffer.append(tmpReaction);
-			}
+			}*/
 			
 			// Grab the list of reaction types and add to the main list -
 			ArrayList<ReactionType> localTypeList = (ArrayList<ReactionType>)handler.getProperty("REACTION_TYPE_LIST");
@@ -246,18 +307,20 @@ public class SBMLCCMLModel extends CCMLMAObject {
 		IReactionHandler handler = (IReactionHandler)Class.forName(strClassName).newInstance();
 		
 		// Ok, for now hard-code the handler (for testing)
-		ArrayList<String> rxnList = new ArrayList<String>();
+		//ArrayList<String> rxnList = new ArrayList<String>();
+		ArrayList<String> rxnList = _arrListSBMLReactions;
 		
 		// Build the reactions -
 		handler.constructNetworkReactions(rxnList,ccmlTree);
 		
+		/*
 		// Ok, so we need to add these to the buffer -
 		int NUMBER_OF_REACTIONS = rxnList.size();
 		for (int index=0;index<NUMBER_OF_REACTIONS;index++)
 		{
 			String tmpReaction = rxnList.get(index);
 			buffer.append(tmpReaction);
-		}
+		}*/
 		
 		// Grab the list of reaction types and add to the main list -
 		ArrayList<ReactionType> localTypeList = (ArrayList<ReactionType>)handler.getProperty("REACTION_TYPE_LIST");
@@ -319,6 +382,7 @@ public class SBMLCCMLModel extends CCMLMAObject {
 	{
 		// Method attributes -
 		ArrayList<String> arrLBlockClassList = new ArrayList<String>();
+		ArrayList<String> rxnList = _arrListSBMLReactions;
 		
 		// Ok, so I need to get the list of block classes -
 		String strBlockClassXPath = "//receptor_block/@block_class";
@@ -357,18 +421,19 @@ public class SBMLCCMLModel extends CCMLMAObject {
 			IReceptorNetworkHandler handler = (IReceptorNetworkHandler)Class.forName(strClassName).newInstance();
 			
 			// Ok, for now hard-code the handler (for testing)
-			ArrayList<String> rxnList = new ArrayList<String>();
+			//ArrayList<String> rxnList = new ArrayList<String>();
 			
 			// Build the reactions -
 			handler.constructNetworkReactions(rxnList, ccmlTree);
 			
+			/*
 			// Ok, so we need to add these to the buffer -
 			int NUMBER_OF_REACTIONS = rxnList.size();
 			for (int index=0;index<NUMBER_OF_REACTIONS;index++)
 			{
 				String tmpReaction = rxnList.get(index);
 				buffer.append(tmpReaction);
-			}
+			}*/
 			
 			// Grab the list of reaction types and add to the main list -
 			ArrayList<ReactionType> localTypeList = (ArrayList<ReactionType>)handler.getProperty("REACTION_TYPE_LIST");
@@ -391,6 +456,7 @@ public class SBMLCCMLModel extends CCMLMAObject {
 			}
 		}
 	}
+	
 	
 	public void populateSpeciesList(StringBuffer buffer,Document ccmlTree,Document doc) throws Exception
 	{
@@ -440,7 +506,8 @@ public class SBMLCCMLModel extends CCMLMAObject {
 		IReactionHandler handler = (IReactionHandler)Class.forName(strClassName).newInstance();
 		
 		// Ok, for now hard-code the handler (for testing)
-		ArrayList<String> rxnList = new ArrayList<String>();
+		//ArrayList<String> rxnList = new ArrayList<String>();
+		ArrayList<String> rxnList = _arrListSBMLReactions;
 		
 		// Build the reactions -
 		handler.constructNetworkReactions(rxnList,doc);
@@ -472,6 +539,9 @@ public class SBMLCCMLModel extends CCMLMAObject {
 				addSBMLSpeciesToList(strLocalSpecies,"0.0");
 			}
 		}
+		
+		// put the reaction list in properties 
+		this.setProperty("LOCAL_REACTION_LIST",rxnList);
 	}
 	
 	private void generateIrreversibleGeneralReaction(StringBuffer buffer,Document doc,ArrayList<String> arrReactants,ArrayList<String> arrProducts,ReactionType rxnType) throws Exception

@@ -61,8 +61,8 @@ public class ProcessCCMLTree implements ILogicHandler {
 		
 		// Build list of species -
 		model_wrapper.populateReactionList(reactionBuffer, ccmlTree,doc);
-		model_wrapper.populateParameterBuffer(parameterBuffer, ccmlTree,doc);
 		model_wrapper.populateSpeciesList(speciesBuffer,ccmlTree,doc);
+		model_wrapper.populateParameterBufferFromReactions(parameterBuffer, ccmlTree, doc);
 		
 		// Add the species to the sbmlBuffer -
 		_sbmlBuffer.append("\n");

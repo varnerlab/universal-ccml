@@ -193,7 +193,7 @@ public abstract class CCMLMAObject {
 		String strPrefixXPath = "//listOfSymbolPrefixes/symbol_prefix";
 		populateProperties(strPrefixXPath,ccmlTree);
 		
-		// Load the siganling components -
+		// Load the signaling components -
 		String strXPathSignalingComponents = "//signaling_block[@block_class='"+strBlockName+"']/listOfSignalingComponents/signaling_component";
 		populateProperties(strXPathSignalingComponents,ccmlTree);
 		
