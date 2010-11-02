@@ -193,7 +193,7 @@ public abstract class CCMLMAObject {
 		String strPrefixXPath = "//listOfSymbolPrefixes/symbol_prefix";
 		populateProperties(strPrefixXPath,ccmlTree);
 		
-		// Load the signaling components -
+		// Load the siganling components -
 		String strXPathSignalingComponents = "//signaling_block[@block_class='"+strBlockName+"']/listOfSignalingComponents/signaling_component";
 		populateProperties(strXPathSignalingComponents,ccmlTree);
 		
@@ -384,10 +384,10 @@ public abstract class CCMLMAObject {
 		String strTmpString = local_buffer.toString();
 		
 		// Check to see if this string is in the main buffer already -
-		if (!_arrListSBMLReactions.contains(strTmpString))
+		if (!buffer.contains(strTmpString))
 		{
 			// Ok, add the reaction string to the buffer -
-			_arrListSBMLReactions.add(strTmpString);
+			//_arrListSBMLReactions.add(strTmpString);
 			
 			// Add the local buffer to the main buffer -
 			buffer.add(local_buffer.toString());
@@ -395,6 +395,46 @@ public abstract class CCMLMAObject {
 			// Ok, if we keep this reaction then I need to store its type -
 			_arrListReactionType.add(rxnType);
 		}	
+	}
+	
+	protected ArrayList<String> generateReactionTypeList(ArrayList<String> arrListReactions,Document doc) throws Exception
+	{
+		// Method attributes -
+		ArrayList<String> arrTypes = new ArrayList<String>();
+		StringBuffer local_buffer = new StringBuffer();
+		DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+    	dbFactory.setNamespaceAware(true);
+    	DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+		
+		// Ok, so we are going to turn the reaction list into an xml tree and then use xpath to extract all the species -
+		local_buffer.append("<?xml version=\"1.0\"?>\n");
+		local_buffer.append("<listOfReactions>\n");
+		int NUMBER_OF_REACTIONS = arrListReactions.size();
+		for (int index=0;index<NUMBER_OF_REACTIONS;index++)
+		{
+			String tmpReaction = arrListReactions.get(index);
+			local_buffer.append(tmpReaction);
+		}
+		local_buffer.append("</listOfReactions>\n");
+		String strTmp = local_buffer.toString();
+		
+		// Ok, so now we need to create a document -
+		Document reaction_dom_tree = dBuilder.parse(new InputSource(new StringReader(local_buffer.toString())));
+		String strXPath = "//reaction/@id";
+		NodeList nodeList = (NodeList)_xpath.evaluate(strXPath,reaction_dom_tree,XPathConstants.NODESET);
+		int NUMBER_OF_SPECIES = nodeList.getLength();
+		for (int species_index=0;species_index<NUMBER_OF_SPECIES;species_index++)
+		{
+			// Get the gene symbol -
+			Node tmpNode = nodeList.item(species_index);
+			String strID = tmpNode.getNodeValue();
+			
+			// put in the arrTypes -
+			arrTypes.add(strID);
+		}
+		
+		// return the array -
+		return(arrTypes);
 	}
 	
 	protected ArrayList<String> generateSpeciesList(ArrayList<String> arrListReactions,Document doc) throws Exception
