@@ -34,7 +34,7 @@ public class MARegulatedGeneExpressionHandler extends CCMLMAObject implements IR
 		}
 		
 		// Get the list of prefixes -
-		String strPrefixXPath = "//listOfSymbolPrefixes/symbol_prefix";
+		String strPrefixXPath = "//listOfSymbolPrefixes/prefix";
 		populateProperties(strPrefixXPath,ccmlTree);
 	}
 	
@@ -64,8 +64,11 @@ public class MARegulatedGeneExpressionHandler extends CCMLMAObject implements IR
 		ArrayList<String> arrProducts = new ArrayList<String>();
 		
 		// Ok, get the compartment names etc for gene expression -
-		String strCompartment = (String)getProperty("TRANSCRIPTION_COMPARTMENT");
-		String strTranslationCompartment = (String)getProperty("TRANSLATION_COMPARTMENT");
+		// String strCompartment = (String)getProperty("TRANSCRIPTION_COMPARTMENT");
+		// String strTranslationCompartment = (String)getProperty("TRANSLATION_COMPARTMENT");
+		String strCompartment = doCCMLCompartmentLookup(doc,"NUCLEAR_KEY");
+		String strTranslationCompartment = doCCMLCompartmentLookup(doc,"CYTOSOL_KEY");
+		
 		String strTranslationRibosome = (String)getProperty("RIBOSOME_SYMBOL");
 		String strRNAP = (String)getProperty("RNA_POLYMERASE_SYMBOL");
 		String strExport = (String)getProperty("NUCLEAR_TRANSPORTER_OUT");
@@ -224,8 +227,12 @@ public class MARegulatedGeneExpressionHandler extends CCMLMAObject implements IR
 		
 		
 		// Ok, get the compartment names etc for gene expression -
-		String strCompartment = (String)getProperty("TRANSCRIPTION_COMPARTMENT");
-		String strTranslationCompartment = (String)getProperty("TRANSLATION_COMPARTMENT");
+		// String strCompartment = (String)getProperty("TRANSCRIPTION_COMPARTMENT");
+		// String strTranslationCompartment = (String)getProperty("TRANSLATION_COMPARTMENT");
+		String strCompartment = doCCMLCompartmentLookup(doc,"NUCLEAR_KEY");
+		String strTranslationCompartment = doCCMLCompartmentLookup(doc,"CYTOSOL_KEY");
+		
+		
 		String strTranslationRibosome = (String)getProperty("RIBOSOME_SYMBOL");
 		String strRNAP = (String)getProperty("RNA_POLYMERASE_SYMBOL");
 		String strExport = (String)getProperty("NUCLEAR_TRANSPORTER_OUT");
@@ -383,8 +390,11 @@ public class MARegulatedGeneExpressionHandler extends CCMLMAObject implements IR
 		
 		
 		// Ok, get the compartment names etc for gene expression -
-		String strCompartment = (String)getProperty("TRANSCRIPTION_COMPARTMENT");
-		String strTranslationCompartment = (String)getProperty("TRANSLATION_COMPARTMENT");
+		//String strCompartment = (String)getProperty("TRANSCRIPTION_COMPARTMENT");
+		//String strTranslationCompartment = (String)getProperty("TRANSLATION_COMPARTMENT");
+		String strCompartment = doCCMLCompartmentLookup(doc,"NUCLEAR_KEY");
+		String strTranslationCompartment = doCCMLCompartmentLookup(doc,"CYTOSOL_KEY");
+		
 		String strTranslationRibosome = (String)getProperty("RIBOSOME_SYMBOL");
 		String strRNAP = (String)getProperty("RNA_POLYMERASE_SYMBOL");
 		String strExport = (String)getProperty("NUCLEAR_TRANSPORTER_OUT");
@@ -575,8 +585,11 @@ public class MARegulatedGeneExpressionHandler extends CCMLMAObject implements IR
 		ArrayList<String> arrProducts = new ArrayList<String>();
 		
 		// Ok, get the compartment names etc for gene expression -
-		String strCompartment = (String)getProperty("TRANSCRIPTION_COMPARTMENT");
-		String strTranslationCompartment = (String)getProperty("TRANSLATION_COMPARTMENT");
+		// String strCompartment = (String)getProperty("TRANSCRIPTION_COMPARTMENT");
+		// String strTranslationCompartment = (String)getProperty("TRANSLATION_COMPARTMENT");
+		String strCompartment = doCCMLCompartmentLookup(doc,"NUCLEAR_KEY");
+		String strTranslationCompartment = doCCMLCompartmentLookup(doc,"CYTOSOL_KEY");
+		
 		String strTranslationRibosome = (String)getProperty("RIBOSOME_SYMBOL");
 		String strRNAP = (String)getProperty("RNA_POLYMERASE_SYMBOL");
 		String strExport = (String)getProperty("NUCLEAR_TRANSPORTER_OUT");
@@ -598,8 +611,11 @@ public class MARegulatedGeneExpressionHandler extends CCMLMAObject implements IR
 		ArrayList<String> arrProducts = new ArrayList<String>();
 		
 		// Ok, get the compartment names etc for gene expression -
-		String strCompartment = (String)getProperty("TRANSCRIPTION_COMPARTMENT");
-		String strTranslationCompartment = (String)getProperty("TRANSLATION_COMPARTMENT");
+		// String strCompartment = (String)getProperty("TRANSCRIPTION_COMPARTMENT");
+		// String strTranslationCompartment = (String)getProperty("TRANSLATION_COMPARTMENT");
+		String strCompartment = doCCMLCompartmentLookup(doc,"NUCLEAR_KEY");
+		String strTranslationCompartment = doCCMLCompartmentLookup(doc,"CYTOSOL_KEY");
+		
 		String strTranslationRibosome = (String)getProperty("RIBOSOME_SYMBOL");
 		String strRNAP = (String)getProperty("RNA_POLYMERASE_SYMBOL");
 		String strExport = (String)getProperty("NUCLEAR_TRANSPORTER_OUT");
@@ -625,8 +641,11 @@ public class MARegulatedGeneExpressionHandler extends CCMLMAObject implements IR
 		ArrayList<String> arrProducts = new ArrayList<String>();
 		
 		// Ok, get the compartment names etc for gene expression -
-		String strCompartment = (String)getProperty("TRANSCRIPTION_COMPARTMENT");
-		String strTranslationCompartment = (String)getProperty("TRANSLATION_COMPARTMENT");
+		// String strCompartment = (String)getProperty("TRANSCRIPTION_COMPARTMENT");
+		// String strTranslationCompartment = (String)getProperty("TRANSLATION_COMPARTMENT");
+		String strCompartment = doCCMLCompartmentLookup(doc,"NUCLEAR_KEY");
+		String strTranslationCompartment = doCCMLCompartmentLookup(doc,"CYTOSOL_KEY");
+		
 		String strTranslationRibosome = (String)getProperty("RIBOSOME_SYMBOL");
 		String strRNAP = (String)getProperty("RNA_POLYMERASE_SYMBOL");
 		String strExport = (String)getProperty("NUCLEAR_TRANSPORTER_OUT");
@@ -670,8 +689,11 @@ public class MARegulatedGeneExpressionHandler extends CCMLMAObject implements IR
 		ArrayList<String> arrProducts = new ArrayList<String>();
 		
 		// Ok, get the compartment names etc for gene expression -
-		String strCompartment = (String)getProperty("TRANSCRIPTION_COMPARTMENT");
-		String strTranslationCompartment = (String)getProperty("TRANSLATION_COMPARTMENT");
+		// String strCompartment = (String)getProperty("TRANSCRIPTION_COMPARTMENT");
+		// String strTranslationCompartment = (String)getProperty("TRANSLATION_COMPARTMENT");
+		String strCompartment = doCCMLCompartmentLookup(doc,"NUCLEAR_KEY");
+		String strTranslationCompartment = doCCMLCompartmentLookup(doc,"CYTOSOL_KEY");
+		
 		String strTranslationRibosome = (String)getProperty("RIBOSOME_SYMBOL");
 		String strRNAP = (String)getProperty("RNA_POLYMERASE_SYMBOL");
 		String strExport = (String)getProperty("NUCLEAR_TRANSPORTER_OUT");

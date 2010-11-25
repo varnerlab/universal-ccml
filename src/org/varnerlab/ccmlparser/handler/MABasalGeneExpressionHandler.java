@@ -38,7 +38,7 @@ public class MABasalGeneExpressionHandler extends CCMLMAObject implements IReact
 		}
 		
 		// Get the list of prefixes -
-		String strPrefixXPath = "//listOfSymbolPrefixes/symbol_prefix";
+		String strPrefixXPath = "//listOfSymbolPrefixes/prefix";
 		populateProperties(strPrefixXPath,ccmlTree);
 	}
 	
@@ -53,8 +53,10 @@ public class MABasalGeneExpressionHandler extends CCMLMAObject implements IReact
 		init(ccmlTree);
 		
 		// Ok, get the compartment names etc for gene expression -
-		String strCompartment = (String)getProperty("TRANSCRIPTION_COMPARTMENT");
-		String strTranslationCompartment = (String)getProperty("TRANSLATION_COMPARTMENT");
+		String strCompartment = doCCMLCompartmentLookup(ccmlTree,"NUCLEAR_KEY");
+		String strTranslationCompartment = doCCMLCompartmentLookup(ccmlTree,"CYTOSOL_KEY");
+		
+		
 		String strTranslationRibosome = (String)getProperty("RIBOSOME_SYMBOL");
 		String strRNAP = (String)getProperty("RNA_POLYMERASE_SYMBOL");
 		String strExport = (String)getProperty("NUCLEAR_TRANSPORTER_OUT");

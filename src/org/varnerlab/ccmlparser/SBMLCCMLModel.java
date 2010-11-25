@@ -92,7 +92,7 @@ public class SBMLCCMLModel extends CCMLMAObject {
 		
 	}
 	
-	
+	/*
 	public void populateParameterBuffer(StringBuffer buffer,Document ccmlTree,Document doc) throws Exception
 	{
 		// Method attributes -
@@ -132,7 +132,7 @@ public class SBMLCCMLModel extends CCMLMAObject {
 			buffer.append(dblValue);
 			buffer.append("\"/>\n");
 		}
-	}
+	}*/
 	
 	public void populateReactionList(StringBuffer final_buffer,Document ccmlTree,Document doc) throws Exception
 	{
@@ -361,8 +361,9 @@ public class SBMLCCMLModel extends CCMLMAObject {
 			String strComponentSymbol = tmpNode.getNodeValue();
 			
 			// Ok, grab the compartment -
-			String strComponentXPath = "//Infrastructure_synthesis_block/infrastructure[@symbol='"+strComponentSymbol+"']/@compartment";
-			String strCompartment = queryCCMLTree(doc,strComponentXPath);
+			String strComponentXPath = "//Infrastructure_synthesis_block/infrastructure[@symbol='"+strComponentSymbol+"']/@compartment_key";
+			String strCompartmentKey = queryCCMLTree(doc,strComponentXPath);
+			String strCompartment = doCCMLCompartmentLookup(doc,strCompartmentKey);
 			
 			// Encode the reactions -
 			arrReactants.add(strComponentSymbol+"_"+strCompartment);
@@ -703,7 +704,7 @@ public class SBMLCCMLModel extends CCMLMAObject {
 		buffer.append("\t\t<listOfCompartments>\n");
 	
 		// XPath string -
-		String strXPath = "//compartment/@name";
+		String strXPath = "//compartment/@symbol";
 		NodeList cList = (NodeList)_xpath.evaluate(strXPath,doc,XPathConstants.NODESET);
 		int INT_COMPARTMENT_LIST = cList.getLength();
 		for (int index=0;index<INT_COMPARTMENT_LIST;index++)

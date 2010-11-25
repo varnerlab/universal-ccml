@@ -24,7 +24,7 @@ public class MAMembraneTransportHandler extends CCMLMAObject implements IReactio
 		populateProperties(strXPathBase,ccmlTree);
 		
 		// List of prefixes -
-		String strPrefixXPath = "//listOfSymbolPrefixes/symbol_prefix";
+		String strPrefixXPath = "//listOfSymbolPrefixes/prefix";
 		populateProperties(strPrefixXPath,ccmlTree);
 	}
 	
@@ -72,8 +72,10 @@ public class MAMembraneTransportHandler extends CCMLMAObject implements IReactio
 			String strInterfaceSymbol = tmpNode.getNodeValue();
 			
 			// What compartment is this interface symbol in?
-			String strISymbolComparmentXPath = "//Membrane_transport_block[@block_class='DEFAULT_MEMBRANE_TRANSPORT']/listOfInterfaces/interface[@symbol='"+strInterfaceSymbol+"']/@compartment";
-			String strCompartment = queryCCMLTree(ccmlTree,strISymbolComparmentXPath);
+			String strISymbolComparmentXPath = "//Membrane_transport_block[@block_class='DEFAULT_MEMBRANE_TRANSPORT']/listOfInterfaces/interface[@symbol='"+strInterfaceSymbol+"']/@compartment_key";
+			String strCompartmentKey = queryCCMLTree(ccmlTree,strISymbolComparmentXPath);
+			String strCompartment = doCCMLCompartmentLookup(ccmlTree,strCompartmentKey);
+			
 			
 			// Ok now that I have the interface symbol - process the targets (activate) 
 			String strTargetXPath = "//Membrane_transport_block[@block_class='DEFAULT_MEMBRANE_TRANSPORT']/listOfInterfaces/interface[@symbol='"+strInterfaceSymbol+"']/target_transport/@symbol";
@@ -87,12 +89,14 @@ public class MAMembraneTransportHandler extends CCMLMAObject implements IReactio
 				
 				// Have to do just two more xpath hits to get the to and from compartments -
 				// to compartment 
-				String strToCompartmentXPath = "//Membrane_transport_block[@block_class='DEFAULT_MEMBRANE_TRANSPORT']/listOfInterfaces/interface[@symbol='"+strInterfaceSymbol+"']/target_transport[@symbol='"+strTargetSymbol+"']/@to_compartment";
-				String strToCompartment = queryCCMLTree(ccmlTree,strToCompartmentXPath);
+				String strToCompartmentXPath = "//Membrane_transport_block[@block_class='DEFAULT_MEMBRANE_TRANSPORT']/listOfInterfaces/interface[@symbol='"+strInterfaceSymbol+"']/target_transport[@symbol='"+strTargetSymbol+"']/@to_compartment_key";
+				String strToCompartmentKey = queryCCMLTree(ccmlTree,strToCompartmentXPath);
+				String strToCompartment = doCCMLCompartmentLookup(ccmlTree,strToCompartmentKey);
 				
 				// From compartment -
-				String strFromCompartmentXPath = "//Membrane_transport_block[@block_class='DEFAULT_MEMBRANE_TRANSPORT']/listOfInterfaces/interface[@symbol='"+strInterfaceSymbol+"']/target_transport[@symbol='"+strTargetSymbol+"']/@from_compartment";
-				String strFromCompartment = queryCCMLTree(ccmlTree,strFromCompartmentXPath);
+				String strFromCompartmentXPath = "//Membrane_transport_block[@block_class='DEFAULT_MEMBRANE_TRANSPORT']/listOfInterfaces/interface[@symbol='"+strInterfaceSymbol+"']/target_transport[@symbol='"+strTargetSymbol+"']/@from_compartment_key";
+				String strFromCompartmentKey = queryCCMLTree(ccmlTree,strFromCompartmentXPath);
+				String strFromCompartment = doCCMLCompartmentLookup(ccmlTree,strFromCompartmentKey);
 				
 				// Process the targets -
 				// Binding -

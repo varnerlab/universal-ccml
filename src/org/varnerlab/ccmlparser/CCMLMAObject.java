@@ -332,6 +332,20 @@ public abstract class CCMLMAObject {
 		
 	}
 	
+	// Do XPAth lookup 
+	protected String doCCMLCompartmentLookup(Document ccmlTree,String strKeyName) throws Exception
+	{
+		// Method attributes -
+		
+		
+		// Ok, let's formulate the xpath string -
+		String strXPathCompartment = "//listOfCompartments/compartment[@key='"+strKeyName+"']/@symbol";
+		String strCompartment = queryCCMLTree(ccmlTree,strXPathCompartment);
+		
+		// return -
+		return(strCompartment);
+	}
+	
 	protected void init(String strBlockName, Document ccmlTree) throws Exception
 	{
 		// Method attributes -
@@ -372,8 +386,9 @@ public abstract class CCMLMAObject {
 			String strSpecies = tmpNode.getNodeValue();
 			
 			// Get the compartment that this species is in -
-			String strXPathCompartment = "//signaling_block[@block_class='"+strBlockName+"']/listOfDegradation/degrade[@symbol='"+strSpecies+"']/@compartment";
-			String strCompartment = queryCCMLTree(ccmlTree,strXPathCompartment);
+			String strXPathCompartment = "//signaling_block[@block_class='"+strBlockName+"']/listOfDegradation/degrade[@symbol='"+strSpecies+"']/@compartment_key";
+			String strCompartmentKey = queryCCMLTree(ccmlTree,strXPathCompartment);
+			String strCompartment = doCCMLCompartmentLookup(ccmlTree,strCompartmentKey);
 			
 			// Encode the degrdation reaction -
 			arrReactants.add(strSpecies+"_"+strCompartment);

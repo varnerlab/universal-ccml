@@ -44,8 +44,8 @@ public class MABCATENINNetworkHandler extends CCMLMAObject implements IReactionH
 	private void encodeBCATENINBinding(ArrayList<String> arrRxnList,Document ccmlTree) throws Exception
 	{
 		// Method attributes -
-		String strReceptorCompartment = (String)getProperty("RECEPTOR_COMPARTMENT");
-		
+		//String strReceptorCompartment = (String)getProperty("RECEPTOR_COMPARTMENT");
+		String strReceptorCompartment = doCCMLCompartmentLookup(ccmlTree,"CYTOSOL_KEY");
 		
 		// Ok, we need to go through all the SMAD blocks -
 		String strSMADBlocksXPath = "//signaling_block[@block_class='BCATENIN_NETWORK']/@symbol";
