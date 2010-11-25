@@ -43,7 +43,9 @@ public class MAAKTNetworkHandler extends CCMLMAObject implements IReactionHandle
 		ArrayList<String> arrProducts = new ArrayList<String>();
 		
 		// Get component strings -
-		String strCompartment = (String)getProperty("SIGNALING_COMPARTMENT");
+		// String strCompartment = (String)getProperty("SIGNALING_COMPARTMENT");
+		String strCompartment = doCCMLCompartmentLookup(ccmlTree,"CYTOSOL_KEY");
+		
 		String strActivePI3KSymbol = (String)getProperty("ACTIVE_PI3K_SYMBOL");
 		String strActivated = (String)getProperty("ACTIVATED_PREFIX");
 		String strAKTComponent = (String)getProperty("AKT_SYMBOL");
