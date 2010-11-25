@@ -30,6 +30,157 @@ public abstract class CCMLMAObject {
 		_propTable.put(key, value);
 	}
 	
+	protected void buildInterfaceReactions(String strBlockName, String strBlockClassName,ArrayList<String> arrRxnList,Document ccmlTree) throws Exception {
+		// Method attributes -
+		ArrayList<String> arrReactants = new ArrayList<String>();
+		ArrayList<String> arrProducts = new ArrayList<String>();
+		String strReceptorCompartment = (String)getProperty("RECEPTOR_COMPARTMENT");
+		
+		// Get prefix -
+		String strPhosphorylationPrefix = (String)getProperty("PHOSPHORYLATION_PREFIX");
+		String strDoublePhosphorylationPrefix = (String)getProperty("DOUBLE_PHOSPHORYLATION_PREFIX");
+		String strActivatedPrefix = (String)getProperty("ACTIVATED_PREFIX");
+		String strDeativatedPrefix = (String)getProperty("DEACTIVATED_PREFIX");
+		String strUBPrefix = (String)getProperty("UBIQUITIN_PREFIX");
+		
+		
+		// Ok, let's get the list interface blocks -
+		// We need to update this so it is *not* in the signaling blocks -
+		String strBlockXPath = "//"+strBlockName+"[@block_class='"+strBlockClassName+"']/listOfInterfaces/interface/@symbol";
+		NodeList nodeList = (NodeList)_xpath.evaluate(strBlockXPath,ccmlTree,XPathConstants.NODESET);
+		int NUMBER_OF_INTERFACES= nodeList.getLength();
+		for (int index = 0;index<NUMBER_OF_INTERFACES;index++)
+		{
+			// Get the interface symbol -
+			Node tmpNode = nodeList.item(index);
+			String strInterfaceSymbol = tmpNode.getNodeValue();
+			
+			// Ok now that I have the interface symbol - process the targets (activate) 
+			String strTargetXPath = "//"+strBlockName+"[@block_class='"+strBlockClassName+"']/listOfInterfaces/interface[@symbol='"+strInterfaceSymbol+"']/target_phosphorylate/@symbol";
+			NodeList nodeTargetList = (NodeList)_xpath.evaluate(strTargetXPath,ccmlTree,XPathConstants.NODESET);
+			int NUMBER_OF_TARGETS= nodeTargetList.getLength();
+			for (int target_index=0;target_index<NUMBER_OF_TARGETS;target_index++)
+			{
+				// Get the target symbol -
+				Node tmpTargetNode = nodeTargetList.item(target_index);
+				String strTargetSymbol = tmpTargetNode.getNodeValue();
+				
+				// Process the targets -
+				// Binding -
+				arrReactants.add(strInterfaceSymbol+"_"+strReceptorCompartment);
+				arrReactants.add(strTargetSymbol+"_"+strReceptorCompartment);
+				arrProducts.add(strInterfaceSymbol+"_"+strTargetSymbol+"_"+strReceptorCompartment);
+				encodeMassActionSBMLReaction(arrRxnList,ccmlTree,arrReactants,arrProducts,ReactionType.FORWARD_RATE);
+				encodeMassActionSBMLReaction(arrRxnList,ccmlTree,arrProducts,arrReactants,ReactionType.REVERSE_RATE);
+				arrReactants.clear();
+				arrProducts.clear();
+				
+				// Phosphorylate that bitch ..
+				arrReactants.add(strInterfaceSymbol+"_"+strTargetSymbol+"_"+strReceptorCompartment);
+				arrProducts.add(strInterfaceSymbol+"_"+strReceptorCompartment);
+				arrProducts.add(strPhosphorylationPrefix+"_"+strTargetSymbol+"_"+strReceptorCompartment);
+				encodeMassActionSBMLReaction(arrRxnList,ccmlTree,arrReactants,arrProducts,ReactionType.CATALYTIC_RATE);
+				arrReactants.clear();
+				arrProducts.clear();
+			}
+			
+			// Ok, process the Ub interface -
+			// Ok now that I have the interface symbol - process the targets (activate) 
+			String strTargetActivateUbXPath = "//"+strBlockName+"[@block_class='"+strBlockClassName+"']/listOfInterfaces/interface[@symbol='"+strInterfaceSymbol+"']/target_ubiquitylation/@symbol";
+			NodeList nodeTargetActivateUbList = (NodeList)_xpath.evaluate(strTargetActivateUbXPath,ccmlTree,XPathConstants.NODESET);
+			NUMBER_OF_TARGETS= nodeTargetActivateUbList.getLength();
+			for (int target_index=0;target_index<NUMBER_OF_TARGETS;target_index++)
+			{
+				// Get the target symbol -
+				Node tmpTargetNode = nodeTargetActivateUbList.item(target_index);
+				String strTargetSymbol = tmpTargetNode.getNodeValue();
+				
+				// Process the targets -
+				// Binding -
+				arrReactants.add(strInterfaceSymbol+"_"+strReceptorCompartment);
+				arrReactants.add(strTargetSymbol+"_"+strReceptorCompartment);
+				arrProducts.add(strInterfaceSymbol+"_"+strTargetSymbol+"_"+strReceptorCompartment);
+				encodeMassActionSBMLReaction(arrRxnList,ccmlTree,arrReactants,arrProducts,ReactionType.FORWARD_RATE);
+				encodeMassActionSBMLReaction(arrRxnList,ccmlTree,arrProducts,arrReactants,ReactionType.REVERSE_RATE);
+				arrReactants.clear();
+				arrProducts.clear();
+				
+				// Phosphorylate that bitch ..
+				arrReactants.add(strInterfaceSymbol+"_"+strTargetSymbol+"_"+strReceptorCompartment);
+				arrProducts.add(strInterfaceSymbol+"_"+strReceptorCompartment);
+				arrProducts.add(strUBPrefix+"_"+strTargetSymbol+"_"+strReceptorCompartment);
+				encodeMassActionSBMLReaction(arrRxnList,ccmlTree,arrReactants,arrProducts,ReactionType.CATALYTIC_RATE);
+				arrReactants.clear();
+				arrProducts.clear();
+			}
+			
+			// Ok now that I have the interface symbol - process the targets (activate) 
+			String strTargetActivateXPath = "//"+strBlockName+"[@block_class='"+strBlockClassName+"']/listOfInterfaces/interface[@symbol='"+strInterfaceSymbol+"']/target_activate/@symbol";
+			NodeList nodeTargetActivateList = (NodeList)_xpath.evaluate(strTargetActivateXPath,ccmlTree,XPathConstants.NODESET);
+			NUMBER_OF_TARGETS= nodeTargetActivateList.getLength();
+			for (int target_index=0;target_index<NUMBER_OF_TARGETS;target_index++)
+			{
+				// Get the target symbol -
+				Node tmpTargetNode = nodeTargetActivateList.item(target_index);
+				String strTargetSymbol = tmpTargetNode.getNodeValue();
+				
+				// Process the targets -
+				// Binding -
+				arrReactants.add(strInterfaceSymbol+"_"+strReceptorCompartment);
+				arrReactants.add(strTargetSymbol+"_"+strReceptorCompartment);
+				arrProducts.add(strInterfaceSymbol+"_"+strTargetSymbol+"_"+strReceptorCompartment);
+				encodeMassActionSBMLReaction(arrRxnList,ccmlTree,arrReactants,arrProducts,ReactionType.FORWARD_RATE);
+				encodeMassActionSBMLReaction(arrRxnList,ccmlTree,arrProducts,arrReactants,ReactionType.REVERSE_RATE);
+				arrReactants.clear();
+				arrProducts.clear();
+				
+				// Phosphorylate that bitch ..
+				arrReactants.add(strInterfaceSymbol+"_"+strTargetSymbol+"_"+strReceptorCompartment);
+				arrProducts.add(strInterfaceSymbol+"_"+strReceptorCompartment);
+				arrProducts.add(strActivatedPrefix+"_"+strTargetSymbol+"_"+strReceptorCompartment);
+				encodeMassActionSBMLReaction(arrRxnList,ccmlTree,arrReactants,arrProducts,ReactionType.CATALYTIC_RATE);
+				arrReactants.clear();
+				arrProducts.clear();
+			}
+			
+			String strTargetDeactivateXPath = "//"+strBlockName+"[@block_class='"+strBlockClassName+"']/listOfInterfaces/interface[@symbol='"+strInterfaceSymbol+"']/target_dephosphorylate/@symbol";
+			NodeList nodeTargetDeactivateList = (NodeList)_xpath.evaluate(strTargetDeactivateXPath,ccmlTree,XPathConstants.NODESET);
+			int NUMBER_OF_DEACTIVATE_TARGETS= nodeTargetDeactivateList.getLength();
+			for (int target_index=0;target_index<NUMBER_OF_DEACTIVATE_TARGETS;target_index++)
+			{
+				// Get the target symbol -
+				Node tmpTargetNode = nodeTargetDeactivateList.item(target_index);
+				String strTargetSymbol = tmpTargetNode.getNodeValue();
+				
+				// Find the *last* _
+				int INDEX_LAST_UNDERSCORE = strTargetSymbol.indexOf("_");
+				int LENGTH = strTargetSymbol.length();
+				
+				// Get the initiator -
+				String strDeactivatedTarget = strTargetSymbol.substring(INDEX_LAST_UNDERSCORE+1,LENGTH);
+				
+				// Process the targets -
+				// Binding -
+				arrReactants.add(strInterfaceSymbol+"_"+strReceptorCompartment);
+				arrReactants.add(strTargetSymbol+"_"+strReceptorCompartment);
+				arrProducts.add(strInterfaceSymbol+"_"+strTargetSymbol+"_"+strReceptorCompartment);
+				encodeMassActionSBMLReaction(arrRxnList,ccmlTree,arrReactants,arrProducts,ReactionType.FORWARD_RATE);
+				encodeMassActionSBMLReaction(arrRxnList,ccmlTree,arrProducts,arrReactants,ReactionType.REVERSE_RATE);
+				arrReactants.clear();
+				arrProducts.clear();
+				
+				// De-Phosphorylate that bitch ..
+				arrReactants.add(strInterfaceSymbol+"_"+strTargetSymbol+"_"+strReceptorCompartment);
+				arrProducts.add(strInterfaceSymbol+"_"+strReceptorCompartment);
+				arrProducts.add(strDeactivatedTarget+"_"+strReceptorCompartment);
+				encodeMassActionSBMLReaction(arrRxnList,ccmlTree,arrReactants,arrProducts,ReactionType.CATALYTIC_RATE);
+				arrReactants.clear();
+				arrProducts.clear();
+			}
+		}
+		
+	}
+	
 	protected void buildInterfaceReactions(String strBlockName,ArrayList<String> arrRxnList,Document ccmlTree) throws Exception {
 		// Method attributes -
 		ArrayList<String> arrReactants = new ArrayList<String>();
@@ -45,6 +196,7 @@ public abstract class CCMLMAObject {
 		
 		
 		// Ok, let's get the list interface blocks -
+		// We need to update this so it is *not* in the signaling blocks -
 		String strBlockXPath = "//signaling_block[@block_class='"+strBlockName+"']/listOfInterfaces/interface/@symbol";
 		NodeList nodeList = (NodeList)_xpath.evaluate(strBlockXPath,ccmlTree,XPathConstants.NODESET);
 		int NUMBER_OF_INTERFACES= nodeList.getLength();
