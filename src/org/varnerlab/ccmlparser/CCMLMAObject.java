@@ -440,6 +440,19 @@ public abstract class CCMLMAObject {
 		return(strProp);
 	}
 	
+	protected String doCCMLSymbolPrefixLookup(Document ccmlTree,String strKeyName) throws Exception
+	{
+		// Method attributes -
+		
+		
+		// Ok, let's formulate the xpath string -
+		String strXPathPrefix = "//listOfSymbolPrefixes/prefix[@key='"+strKeyName+"']/@symbol";
+		String strPrefix = queryCCMLTree(ccmlTree,strXPathPrefix);
+		
+		// return -
+		return(strPrefix);
+	}
+	
 	protected ArrayList<String> getRegulatorList(String strXPath,Document doc) throws Exception
 	{
 		// Method attributes -
@@ -453,8 +466,16 @@ public abstract class CCMLMAObject {
 			Node tmpNodeRegulator = nodeListRegulators.item(regulator_index);
 			String strRawGeneSymbol = tmpNodeRegulator.getNodeValue();
 			
+			// Ok, so I have the raw regulator symbol - I need to check to see if there is a prefix for this symbol -
+			String strPrefixKeyXPath = "//activator[@symbol='"+strRawGeneSymbol+"']/@prefix_key";
+			String strPrefixKey = queryCCMLTree(doc,strPrefixKeyXPath);
+			String strPrefix = doCCMLSymbolPrefixLookup(doc,strPrefixKey);
+			
+			// Append the prefix -
+			String strGeneSymbol = strPrefix+"_"+strRawGeneSymbol;
+			
 			// Add the regulator to the list -
-			tmpList.add(strRawGeneSymbol);
+			tmpList.add(strGeneSymbol);
 		}
 		
 		// return -
