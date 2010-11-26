@@ -139,6 +139,7 @@ public class SBMLCCMLModel extends CCMLMAObject {
 		// Method attributes -
 		StringBuffer buffer = new StringBuffer();
 		
+		// Put comments in the SBML so we can see which block the reactions come from -
 		processMembraneTransportBlock(buffer,ccmlTree,doc);
 		processBasalExpressionReactionBlock(buffer, ccmlTree,doc);
 		processRegulatedExpressionReactionBlock(buffer, ccmlTree,doc);
@@ -152,6 +153,7 @@ public class SBMLCCMLModel extends CCMLMAObject {
 		{
 			String tmpReaction = _arrListSBMLReactions.get(index);
 			final_buffer.append(tmpReaction);
+			final_buffer.append("\n");
 		}
 	}
 	
