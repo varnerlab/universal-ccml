@@ -336,11 +336,14 @@ public abstract class CCMLMAObject {
 	protected String doCCMLCompartmentLookup(Document ccmlTree,String strKeyName) throws Exception
 	{
 		// Method attributes -
+		String strCompartment = "";
 		
-		
-		// Ok, let's formulate the xpath string -
-		String strXPathCompartment = "//listOfCompartments/compartment[@key='"+strKeyName+"']/@symbol";
-		String strCompartment = queryCCMLTree(ccmlTree,strXPathCompartment);
+		if (!strKeyName.isEmpty())
+		{
+			// Ok, let's formulate the xpath string -
+			String strXPathCompartment = "//listOfCompartments/compartment[@key='"+strKeyName+"']/@symbol";
+			strCompartment = queryCCMLTree(ccmlTree,strXPathCompartment);
+		}
 		
 		// return -
 		return(strCompartment);
@@ -443,17 +446,41 @@ public abstract class CCMLMAObject {
 	protected String doCCMLSymbolPrefixLookup(Document ccmlTree,String strKeyName) throws Exception
 	{
 		// Method attributes -
-		
+		String strPrefix = "";
 		
 		// Ok, let's formulate the xpath string -
-		String strXPathPrefix = "//listOfSymbolPrefixes/prefix[@key='"+strKeyName+"']/@symbol";
-		String strPrefix = queryCCMLTree(ccmlTree,strXPathPrefix);
+		if (!strKeyName.isEmpty())
+		{
+			String strXPathPrefix = "//listOfSymbolPrefixes/prefix[@key='"+strKeyName+"']/@symbol";
+			strPrefix = queryCCMLTree(ccmlTree,strXPathPrefix);
+		}
 		
 		// return -
 		return(strPrefix);
 	}
 	
-	protected ArrayList<String> getRegulatorList(String strXPath,Document doc) throws Exception
+	protected ArrayList<String> getComplexActivatorsList(String strXPath,Document doc) throws Exception
+	{
+		// Method attributes -
+		ArrayList<String> tmpList = new ArrayList<String>();
+		
+		NodeList nodeListRegulators = (NodeList)_xpath.evaluate(strXPath,doc,XPathConstants.NODESET);
+		int NUMBER_OF_BLOCKS = nodeListRegulators.getLength();
+		for (int regulator_index=0;regulator_index<NUMBER_OF_BLOCKS;regulator_index++)
+		{
+			// Get the activator symbols -
+			Node tmpNodeRegulator = nodeListRegulators.item(regulator_index);
+			String strRawGeneSymbol = tmpNodeRegulator.getNodeValue();
+			
+			// Add the regulator to the list -
+			tmpList.add(strRawGeneSymbol);
+		}
+		
+		// return -
+		return(tmpList);
+	}
+	
+	protected ArrayList<String> getRepressorList(String strRawGeneSymbol,String strXPath,Document doc) throws Exception
 	{
 		// Method attributes -
 		ArrayList<String> tmpList = new ArrayList<String>();
@@ -464,15 +491,64 @@ public abstract class CCMLMAObject {
 		{
 			// Get the activator symbols -
 			Node tmpNodeRegulator = nodeListRegulators.item(regulator_index);
-			String strRawGeneSymbol = tmpNodeRegulator.getNodeValue();
+			String strRawRepressorSymbol = tmpNodeRegulator.getNodeValue();
+			String strGeneSymbol = "";
 			
 			// Ok, so I have the raw regulator symbol - I need to check to see if there is a prefix for this symbol -
-			String strPrefixKeyXPath = "//activator[@symbol='"+strRawGeneSymbol+"']/@prefix_key";
+			String strPrefixKeyXPath = "//regulated_gene[@symbol='"+strRawGeneSymbol+"']/descendant::repressor[@symbol='"+strRawRepressorSymbol+"']/@prefix_key";
 			String strPrefixKey = queryCCMLTree(doc,strPrefixKeyXPath);
 			String strPrefix = doCCMLSymbolPrefixLookup(doc,strPrefixKey);
 			
-			// Append the prefix -
-			String strGeneSymbol = strPrefix+"_"+strRawGeneSymbol;
+			if (strPrefix.isEmpty())
+			{
+				// Append the prefix -
+				strGeneSymbol = strRawRepressorSymbol;
+			}
+			else
+			{
+				// Append the prefix -
+				strGeneSymbol = strPrefix+"_"+strRawRepressorSymbol;
+			}
+			
+			
+			// Add the regulator to the list -
+			tmpList.add(strGeneSymbol);
+		}
+		
+		// return -
+		return(tmpList);
+	}
+	
+	protected ArrayList<String> getActivatorList(String strRawGeneSymbol,String strXPath,Document doc) throws Exception
+	{
+		// Method attributes -
+		ArrayList<String> tmpList = new ArrayList<String>();
+		
+		NodeList nodeListRegulators = (NodeList)_xpath.evaluate(strXPath,doc,XPathConstants.NODESET);
+		int NUMBER_OF_REGULATORS = nodeListRegulators.getLength();
+		for (int regulator_index=0;regulator_index<NUMBER_OF_REGULATORS;regulator_index++)
+		{
+			// Get the activator symbols -
+			Node tmpNodeRegulator = nodeListRegulators.item(regulator_index);
+			String strRawActivatorSymbol = tmpNodeRegulator.getNodeValue();
+			String strGeneSymbol = "";
+			
+			// Ok, so I have the raw regulator symbol - I need to check to see if there is a prefix for this symbol -
+			String strPrefixKeyXPath = "//regulated_gene[@symbol='"+strRawGeneSymbol+"']/descendant::activator[@symbol='"+strRawActivatorSymbol+"']/@prefix_key";
+			String strPrefixKey = queryCCMLTree(doc,strPrefixKeyXPath);
+			String strPrefix = doCCMLSymbolPrefixLookup(doc,strPrefixKey);
+			
+			if (strPrefix.isEmpty())
+			{
+				// Append the prefix -
+				strGeneSymbol = strRawActivatorSymbol;
+			}
+			else
+			{
+				// Append the prefix -
+				strGeneSymbol = strPrefix+"_"+strRawActivatorSymbol;
+			}
+			
 			
 			// Add the regulator to the list -
 			tmpList.add(strGeneSymbol);

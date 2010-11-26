@@ -103,7 +103,7 @@ public class MARegulatedGeneExpressionHandler extends CCMLMAObject implements IR
 			
 			// Get the list of activators -
 			String strActivatorsXPath = "//regulated_gene[@symbol='"+strRawGeneSymbol+"']/listOfActivators/activator/@symbol";
-			ArrayList<String> listOfActivators = getRegulatorList(strActivatorsXPath,doc);
+			ArrayList<String> listOfActivators = getActivatorList(strRawGeneSymbol,strActivatorsXPath,doc);
 			
 			int NUMBER_OF_ACTIVATORS = listOfActivators.size();
 			for (int regulator_index=0;regulator_index<NUMBER_OF_ACTIVATORS;regulator_index++)
@@ -165,7 +165,7 @@ public class MARegulatedGeneExpressionHandler extends CCMLMAObject implements IR
 			
 			// Get the list of repressors -
 			String strRepressorXPath = "//regulated_gene[@symbol='"+strRawGeneSymbol+"']/listOfRepressors/repressor/@symbol";
-			ArrayList<String> listOfRepressors = getRegulatorList(strRepressorXPath,doc);
+			ArrayList<String> listOfRepressors = getRepressorList(strRawGeneSymbol,strRepressorXPath,doc);
 			int NUMBER_OF_REPRESSORS = listOfRepressors.size();
 			for (int regulator_index=0;regulator_index<NUMBER_OF_REPRESSORS;regulator_index++)
 			{
@@ -247,7 +247,7 @@ public class MARegulatedGeneExpressionHandler extends CCMLMAObject implements IR
 		
 		// Process the complex repressors -
 		String strComplexRepressorXPath = "//regulated_gene[@symbol='"+strRawGeneSymbol+"']/listOfComplexRepressors/complex_repressor/@symbol";
-		ArrayList<String> listOfComplexRepressors = getRegulatorList(strComplexRepressorXPath,doc);
+		ArrayList<String> listOfComplexRepressors = getRepressorList(strRawGeneSymbol,strComplexRepressorXPath,doc);
 		int NUMBER_OF_COMPLEX_REPRESSORS = listOfComplexRepressors.size();
 		for (int regulator_index=0;regulator_index<NUMBER_OF_COMPLEX_REPRESSORS;regulator_index++)
 		{
@@ -322,7 +322,7 @@ public class MARegulatedGeneExpressionHandler extends CCMLMAObject implements IR
 		
 			// Formulate the xpath to get the new the list of components = 
 			String strComplexComponentsXPath = "//regulated_gene[@symbol='"+strRawGeneSymbol+"']/listOfComplexRepressors/complex_repressor[@symbol='"+strComplexSymbol+"']/repressor/@symbol";
-			ArrayList<String> listOfRepressorComponents = getRegulatorList(strComplexComponentsXPath,doc);
+			ArrayList<String> listOfRepressorComponents = getRepressorList(strRawGeneSymbol,strComplexComponentsXPath,doc);
 			
 			int NUMBER_OF_COMPONENTS = listOfRepressorComponents.size();
 			ArrayList<String> arrListReactants = new ArrayList<String>();
@@ -409,7 +409,7 @@ public class MARegulatedGeneExpressionHandler extends CCMLMAObject implements IR
 		
 		// Process the list of complex activators -
 		String strComplexActivatorXPath = "//regulated_gene[@symbol='"+strRawGeneSymbol+"']/listOfComplexActivators/complex_activator/@symbol";
-		ArrayList<String> listOfComplexActivators = getRegulatorList(strComplexActivatorXPath,doc);
+		ArrayList<String> listOfComplexActivators = getComplexActivatorsList(strComplexActivatorXPath,doc);
 		
 		int NUMBER_OF_COMPLEX_ACTIVATORS = listOfComplexActivators.size();
 		for (int regulator_index=0;regulator_index<NUMBER_OF_COMPLEX_ACTIVATORS;regulator_index++)
@@ -422,12 +422,13 @@ public class MARegulatedGeneExpressionHandler extends CCMLMAObject implements IR
 			String strCoactivator = queryCCMLTree(doc,strCoregulatorXPath);
 			
 			// Get where this complex assembles -
-			String strAssemblyComplexCompartmentXPath = "//regulated_gene[@symbol='"+strRawGeneSymbol+"']/listOfComplexActivators/complex_activator[@symbol='"+strComplexSymbol+"']/@compartment";
-			String strAssemblyComplexCompartment = queryCCMLTree(doc,strAssemblyComplexCompartmentXPath);
-		
+			String strAssemblyComplexCompartmentKeyXPath = "//regulated_gene[@symbol='"+strRawGeneSymbol+"']/listOfComplexActivators/complex_activator[@symbol='"+strComplexSymbol+"']/@compartment_key";
+			String strAssemblyComplexCompartmentKey = queryCCMLTree(doc,strAssemblyComplexCompartmentKeyXPath);
+			String strAssemblyComplexCompartment = doCCMLCompartmentLookup(doc,strAssemblyComplexCompartmentKey);
+			
 			// Formulate the xpath to get the new the list of components = 
 			String strComplexComponentsXPath = "//regulated_gene[@symbol='"+strRawGeneSymbol+"']/listOfComplexActivators/complex_activator[@symbol='"+strComplexSymbol+"']/activator/@symbol";
-			ArrayList<String> listOfActivatorComponents = getRegulatorList(strComplexComponentsXPath,doc);
+			ArrayList<String> listOfActivatorComponents = getActivatorList(strRawGeneSymbol,strComplexComponentsXPath,doc);
 			
 			if (strCoactivator.isEmpty())
 			{
