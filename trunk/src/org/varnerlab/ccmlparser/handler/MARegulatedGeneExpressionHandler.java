@@ -104,6 +104,7 @@ public class MARegulatedGeneExpressionHandler extends CCMLMAObject implements IR
 			// Get the list of activators -
 			String strActivatorsXPath = "//regulated_gene[@symbol='"+strRawGeneSymbol+"']/listOfActivators/activator/@symbol";
 			ArrayList<String> listOfActivators = getRegulatorList(strActivatorsXPath,doc);
+			
 			int NUMBER_OF_ACTIVATORS = listOfActivators.size();
 			for (int regulator_index=0;regulator_index<NUMBER_OF_ACTIVATORS;regulator_index++)
 			{
@@ -409,6 +410,7 @@ public class MARegulatedGeneExpressionHandler extends CCMLMAObject implements IR
 		// Process the list of complex activators -
 		String strComplexActivatorXPath = "//regulated_gene[@symbol='"+strRawGeneSymbol+"']/listOfComplexActivators/complex_activator/@symbol";
 		ArrayList<String> listOfComplexActivators = getRegulatorList(strComplexActivatorXPath,doc);
+		
 		int NUMBER_OF_COMPLEX_ACTIVATORS = listOfComplexActivators.size();
 		for (int regulator_index=0;regulator_index<NUMBER_OF_COMPLEX_ACTIVATORS;regulator_index++)
 		{
