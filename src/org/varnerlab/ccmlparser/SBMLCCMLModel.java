@@ -43,14 +43,49 @@ public class SBMLCCMLModel extends CCMLMAObject {
 		buffer.append("</sbml>");
 	}
 	
+	public void populateParameterBufferFromReactions(int offset,StringBuffer buffer,ArrayList<String> rxnList,ArrayList<String> oldParametersList,Document ccmlTree,Document doc) throws Exception
+	{
+		// Method attributes -
+		ArrayList<String> newReactionList = new ArrayList<String>();
+		
+		// Copy the rxnList -
+		newReactionList.addAll(rxnList);
+		
+		// Get a list of types -
+		ArrayList<String> arrListTypes = generateReactionTypeList(rxnList,ccmlTree);
+		
+		// Ok, first we need to put the old parameter in the first whatever rows -
+		int NUMBER_OLD_PARAMETERS = oldParametersList.size();
+		for (int old_parameter_index=0;old_parameter_index<NUMBER_OLD_PARAMETERS;old_parameter_index++)
+		{
+			
+			// Get the parameter value -
+			String strOldParameterValue = oldParametersList.get(old_parameter_index);
+				
+			// Construct the parameter line -
+			buffer.append("\t\t\t<parameter id=\"PARAMETER_R_");
+			buffer.append(old_parameter_index+offset);
+			buffer.append("\" name=\"k_");
+			buffer.append(old_parameter_index+offset);
+			buffer.append("\" value=\"");
+			buffer.append(strOldParameterValue);
+			buffer.append("\"/>\n");
+			
+			// Remove the elements from the newReactionList -
+			newReactionList.remove(old_parameter_index);
+		}
+		
+		// Ok, so know we need to process the rest of the list -
+		populateParameterBufferFromReactions(NUMBER_OLD_PARAMETERS,buffer,newReactionList,ccmlTree,doc);
+	}
 	
-	public void populateParameterBufferFromReactions(StringBuffer buffer,Document ccmlTree,Document doc) throws Exception
+	public void populateParameterBufferFromReactions(int offset,StringBuffer buffer,ArrayList<String> rxnList,Document ccmlTree,Document doc) throws Exception
 	{
 		// Method attributes -
 		double dblValue = 0.0;
 		
 		// Get a list of types -
-		ArrayList<String> arrListTypes = generateReactionTypeList(_arrListSBMLReactions,ccmlTree);
+		ArrayList<String> arrListTypes = generateReactionTypeList(rxnList,ccmlTree);
 		
 		// Ok, grab the list of reaction types and then generate random parameters on the proper scale
 		int NUMBER_OF_REACTIONS = arrListTypes.size();
@@ -82,9 +117,9 @@ public class SBMLCCMLModel extends CCMLMAObject {
 			
 			// Construct the parameter line -
 			buffer.append("\t\t\t<parameter id=\"PARAMETER_R_");
-			buffer.append(parameter_index);
+			buffer.append(parameter_index+offset);
 			buffer.append("\" name=\"k_");
-			buffer.append(parameter_index);
+			buffer.append(parameter_index+offset);
 			buffer.append("\" value=\"");
 			buffer.append(dblValue);
 			buffer.append("\"/>\n");
@@ -134,10 +169,13 @@ public class SBMLCCMLModel extends CCMLMAObject {
 		}
 	}*/
 	
-	public void populateReactionList(StringBuffer final_buffer,Document ccmlTree,Document doc) throws Exception
+	public void populateReactionList(ArrayList<String> reactionArray, Document ccmlTree,Document doc) throws Exception
 	{
 		// Method attributes -
 		StringBuffer buffer = new StringBuffer();
+		
+		// Just to make sure all is ok - let's clear out the reaction list -
+		_arrListSBMLReactions.clear();
 		
 		// Put comments in the SBML so we can see which block the reactions come from -
 		processMembraneTransportBlock(buffer,ccmlTree,doc);
@@ -152,6 +190,22 @@ public class SBMLCCMLModel extends CCMLMAObject {
 		for (int index=0;index<NUMBER_OF_REACTIONS;index++)
 		{
 			String tmpReaction = _arrListSBMLReactions.get(index);
+			//final_buffer.append(tmpReaction);
+			//final_buffer.append("\n");
+			reactionArray.add(tmpReaction);
+		}
+	}
+	
+	public void convertReactionListToStringBuffer(ArrayList<String> reactionArray,StringBuffer final_buffer) throws Exception
+	{
+		int NUMBER_OF_REACTIONS = reactionArray.size();
+		for (int index=0;index<NUMBER_OF_REACTIONS;index++)
+		{
+			String tmpReaction = reactionArray.get(index);
+			
+			final_buffer.append("\t\t<!-- REACTION ");
+			final_buffer.append(index);
+			final_buffer.append(" -->\n");
 			final_buffer.append(tmpReaction);
 			final_buffer.append("\n");
 		}
@@ -461,11 +515,11 @@ public class SBMLCCMLModel extends CCMLMAObject {
 	}
 	
 	
-	public void populateSpeciesList(StringBuffer buffer,Document ccmlTree,Document doc) throws Exception
+	public void populateSpeciesList(StringBuffer buffer,ArrayList<String> rxnList,Document ccmlTree,Document doc) throws Exception
 	{
 		
 		// Generate the list of species from the reaction list -
-		ArrayList<String> localSpeciesList = generateSpeciesList(_arrListSBMLReactions);
+		ArrayList<String> localSpeciesList = generateSpeciesList(rxnList);
 		
 		int NUMBER_OF_LOCAL_SPECIES = localSpeciesList.size();
 		for (int species_index=0;species_index<NUMBER_OF_LOCAL_SPECIES;species_index++)
