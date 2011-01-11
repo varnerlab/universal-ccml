@@ -71,22 +71,22 @@ public class ProcessCCMLTree implements ILogicHandler {
 		Document ccmlTreePrevious = null;
 		
 		// Ok, get the name of the input CCML file -
-		String strArrayFileName = "/JobConfiguration/input_file_name/@name";
+		String strArrayFileName = ".//CCMLParserConfiguration/input_file_name/@name";
 		Node fileNode = (Node)_xpath.evaluate(strArrayFileName, doc, XPathConstants.NODE);
 		String strBlueprintFile = fileNode.getNodeValue();
 		
 		// Get the filename that I'm going to write to -
-		String strOutputFileNameXP = "/JobConfiguration/output_file_name/@name";
+		String strOutputFileNameXP = ".//CCMLParserConfiguration/output_file_name/@name";
 		Node outNode = (Node)_xpath.evaluate(strOutputFileNameXP, doc, XPathConstants.NODE);
 		String strOutputFileName = outNode.getNodeValue();
 		
 		// Get the name of the reference CCML (previous CCML version that we'll use to order the reactions)
-		String strPrevArrayFileNameXP = "/JobConfiguration/previous_input_file_name/@name";
+		String strPrevArrayFileNameXP = ".//CCMLParserConfiguration/previous_input_file_name/@name";
 		Node prevFileNode = (Node)_xpath.evaluate(strPrevArrayFileNameXP, doc, XPathConstants.NODE);
 		String strPrevBlueprintFile = prevFileNode.getNodeValue();
 		
 		// Get the name of the parameter input file (if there is one...)
-		String strParaArrayFileNameXP = "/JobConfiguration/parameter_input_file_name/@name";
+		String strParaArrayFileNameXP = ".//CCMLParserConfiguration/parameter_input_file_name/@name";
 		Node paraFileNode = (Node)_xpath.evaluate(strParaArrayFileNameXP, doc, XPathConstants.NODE);
 		String strParaFile = paraFileNode.getNodeValue();
 		

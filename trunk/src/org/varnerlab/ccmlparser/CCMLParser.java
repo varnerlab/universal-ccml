@@ -33,7 +33,7 @@ public class CCMLParser {
       	  	XPathFactory  _xpFactory = XPathFactory.newInstance();
       	  	XPath _xpath = _xpFactory.newXPath();
       	  	
-      	  	String strXPath = "/JobConfiguration/handler/classname/@name";
+      	  	String strXPath = ".//CCMLParserConfiguration/classname/@name";
       	  	Node classNode = (Node)_xpath.evaluate(strXPath,doc,XPathConstants.NODE);
       	  	
       	  	// Create an instance of the logic handler -
