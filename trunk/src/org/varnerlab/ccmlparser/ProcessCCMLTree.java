@@ -72,23 +72,32 @@ public class ProcessCCMLTree implements ILogicHandler {
 		
 		// Ok, get the name of the input CCML file -
 		String strArrayFileName = ".//CCMLParserConfiguration/input_file_name/@name";
+		String strArrayFilePath = ".//CCMLParserConfiguration/input_file_name/@path";
 		Node fileNode = (Node)_xpath.evaluate(strArrayFileName, doc, XPathConstants.NODE);
-		String strBlueprintFile = fileNode.getNodeValue();
+		Node filePathNode = (Node)_xpath.evaluate(strArrayFilePath, doc, XPathConstants.NODE);
+		
+		String strBlueprintFile = filePathNode.getNodeValue()+""+fileNode.getNodeValue();
 		
 		// Get the filename that I'm going to write to -
 		String strOutputFileNameXP = ".//CCMLParserConfiguration/output_file_name/@name";
+		String strOutputFileNameXPPath = ".//CCMLParserConfiguration/output_file_name/@path";
 		Node outNode = (Node)_xpath.evaluate(strOutputFileNameXP, doc, XPathConstants.NODE);
-		String strOutputFileName = outNode.getNodeValue();
+		filePathNode = (Node)_xpath.evaluate(strOutputFileNameXPPath, doc, XPathConstants.NODE);
+		String strOutputFileName = filePathNode.getNodeValue()+""+outNode.getNodeValue();
 		
 		// Get the name of the reference CCML (previous CCML version that we'll use to order the reactions)
 		String strPrevArrayFileNameXP = ".//CCMLParserConfiguration/previous_input_file_name/@name";
+		String strPrevArrayFileNameXPPath = ".//CCMLParserConfiguration/previous_input_file_name/@path";
 		Node prevFileNode = (Node)_xpath.evaluate(strPrevArrayFileNameXP, doc, XPathConstants.NODE);
-		String strPrevBlueprintFile = prevFileNode.getNodeValue();
+		filePathNode = (Node)_xpath.evaluate(strPrevArrayFileNameXPPath, doc, XPathConstants.NODE);
+		String strPrevBlueprintFile = filePathNode.getNodeValue()+""+prevFileNode.getNodeValue();
 		
 		// Get the name of the parameter input file (if there is one...)
 		String strParaArrayFileNameXP = ".//CCMLParserConfiguration/parameter_input_file_name/@name";
+		String strParaArrayFileNameXPPath = ".//CCMLParserConfiguration/parameter_input_file_name/@path";
 		Node paraFileNode = (Node)_xpath.evaluate(strParaArrayFileNameXP, doc, XPathConstants.NODE);
-		String strParaFile = paraFileNode.getNodeValue();
+		filePathNode = (Node)_xpath.evaluate(strParaArrayFileNameXPPath, doc, XPathConstants.NODE);
+		String strParaFile = filePathNode.getNodeValue()+""+paraFileNode.getNodeValue();
 		
 		// Load the blueprint xml file -
 		ccmlTree = loadBlueprintFile(strBlueprintFile);
