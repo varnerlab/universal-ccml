@@ -1,0 +1,1 @@
+CCML is a standardized file format for representing biological systems such as metabolic networks, cell-signaling pathways, and regulatory networks. The CCML format was created with the intention of simplifying code representation. The files can then be input into the Universal Code Generator to generate SBML (System Biology Markup Language) trees and mathematical model codes.
